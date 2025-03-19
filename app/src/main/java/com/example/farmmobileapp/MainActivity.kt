@@ -9,17 +9,29 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.farmmobileapp.di.appModule
 import com.example.farmmobileapp.ui.screens.LoginScreen
 import com.example.farmmobileapp.ui.screens.MainScreen
 import com.example.farmmobileapp.ui.theme.AppTheme
+import org.koin.android.ext.koin.androidContext
+import org.koin.compose.KoinContext
+import org.koin.core.context.startKoin
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        startKoin {
+            androidContext(this@MainActivity)
+            modules(appModule)
+        }
+
         enableEdgeToEdge()
         setContent {
-            AppTheme {
-                AppNavigation()
+            KoinContext {
+                AppTheme {
+                    AppNavigation()
+                }
             }
         }
     }
