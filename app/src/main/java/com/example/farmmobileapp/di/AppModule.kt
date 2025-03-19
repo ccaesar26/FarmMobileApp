@@ -30,6 +30,6 @@ val appModule = module {
     }
     single<IdentityApi> { KtorIdentityApi(get()) }
 
-    viewModel { LoginViewModel() }
+    viewModel { LoginViewModel(get(), get(), get()) }
     viewModel { MainViewModel() }
 }
