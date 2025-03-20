@@ -2,7 +2,9 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.google.ksp)
     alias(libs.plugins.jetbrains.kotlin.serialization)
+    alias(libs.plugins.google.dagger.hilt.android)
 }
 
 android {
@@ -63,12 +65,6 @@ dependencies {
 
     implementation(libs.androidx.navigation.compose)
 
-    implementation(platform(libs.koin.bom))
-    implementation(libs.koin.core)
-    implementation(libs.koin.android)
-    implementation(libs.koin.androidx.compose)
-    implementation(libs.koin.androidx.navigation)
-
     implementation(libs.kotlinx.serialization.json)
 
     implementation(libs.androidx.datastore.preferences)
@@ -82,4 +78,8 @@ dependencies {
     implementation(libs.ktor.serialization.kotlinx.json)
 
     implementation(libs.kotlinx.coroutines.core)
+
+    implementation(libs.dagger.hilt.android)
+    ksp(libs.dagger.hilt.android.compiler)
+    implementation(libs.androidx.hilt.navigation.compose)
 }

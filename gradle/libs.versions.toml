@@ -1,8 +1,9 @@
 [versions]
 agp = "8.9.0"
 datastorePreferences = "1.1.3"
-koinBom = "3.5.6"
-kotlin = "2.1.0"
+hiltNavigation = "1.2.0"
+kotlin = "2.1.10"
+ksp = "2.1.10-1.0.31"
 coreKtx = "1.15.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
@@ -15,11 +16,13 @@ composeBom = "2025.03.00"
 navigationCompose = "2.8.9"
 securityCryptoKtx = "1.1.0-alpha06"
 kotlinxSerializationJson = "1.8.0"
+hilt = "2.51.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
 androidx-datastore-preferences-core = { module = "androidx.datastore:datastore-preferences-core", version.ref = "datastorePreferences" }
+androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigation" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 androidx-security-crypto-ktx = { module = "androidx.security:security-crypto-ktx", version.ref = "securityCryptoKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -35,20 +38,18 @@ androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
-koin-android = { module = "io.insert-koin:koin-android"}
-koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose"}
-koin-androidx-navigation = { module = "io.insert-koin:koin-androidx-navigation"}
-koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koinBom" }
-koin-core = { module = "io.insert-koin:koin-core" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutines" }
-kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinxCoroutines" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 ktor-client-android = { module = "io.ktor:ktor-client-android", version.ref = "ktorClient" }
 ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktorClient" }
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktorClient" }
+dagger-hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
+dagger-hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+google-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 jetbrains-kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+google-dagger-hilt-android = { id= "com.google.dagger.hilt.android", version.ref = "hilt" }

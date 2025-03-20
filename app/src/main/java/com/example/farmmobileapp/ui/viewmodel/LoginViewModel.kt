@@ -7,12 +7,15 @@ import com.example.farmmobileapp.data.api.IdentityApi
 import com.example.farmmobileapp.data.storage.TokenManager
 import com.example.farmmobileapp.util.Resource
 import com.example.farmmobileapp.util.StringResourcesHelper
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class LoginViewModel(
+@HiltViewModel
+class LoginViewModel @Inject constructor(
     private val identityApi: IdentityApi,
     private val tokenManager: TokenManager,
     private val stringResourcesHelper: StringResourcesHelper

@@ -24,10 +24,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.farmmobileapp.R
 import com.example.farmmobileapp.ui.viewmodel.LoginViewModel
-import org.koin.androidx.compose.koinViewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
-fun LoginScreen(viewModel: LoginViewModel = koinViewModel()) {
+fun LoginScreen(viewModel: LoginViewModel = hiltViewModel()) {
 
     val email by viewModel.email.collectAsState()
     val password by viewModel.password.collectAsState()

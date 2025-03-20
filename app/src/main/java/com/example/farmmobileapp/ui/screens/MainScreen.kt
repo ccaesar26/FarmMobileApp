@@ -7,11 +7,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.farmmobileapp.ui.viewmodel.MainViewModel
-import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun MainScreen(viewModel: MainViewModel = koinViewModel()) {
+fun MainScreen(viewModel: MainViewModel = hiltViewModel()) {
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center

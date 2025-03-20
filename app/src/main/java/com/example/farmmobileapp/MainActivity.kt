@@ -12,19 +12,18 @@ import androidx.navigation.compose.rememberNavController
 import com.example.farmmobileapp.ui.screens.LoginScreen
 import com.example.farmmobileapp.ui.screens.MainScreen
 import com.example.farmmobileapp.ui.theme.AppTheme
-import org.koin.compose.KoinContext
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         enableEdgeToEdge()
         setContent {
-//            KoinContext {
-                AppTheme {
-                    AppNavigation()
-                }
-//            }
+            AppTheme {
+                AppNavigation()
+            }
         }
     }
 }
