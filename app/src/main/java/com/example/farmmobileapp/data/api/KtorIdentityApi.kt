@@ -1,5 +1,6 @@
 package com.example.farmmobileapp.data.api
 
+import com.example.farmmobileapp.BuildConfig
 import com.example.farmmobileapp.data.model.LoginResponse
 import com.example.farmmobileapp.util.Resource
 import io.ktor.client.*
@@ -8,9 +9,11 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 
 class KtorIdentityApi(private val httpClient: HttpClient) : IdentityApi {
+    private val baseUrl = BuildConfig.BASE_URL
+
     override suspend fun login(email: String, password: String): Resource<LoginResponse> {
         return try {
-            val response = httpClient.post("/api/identity/login") { // Your backend login endpoint
+            val response = httpClient.post("$baseUrl/identity/login") { // Your backend login endpoint
                 contentType(ContentType.Application.Json)
                 setBody(mapOf("email" to email, "password" to password)) // Request body
             }

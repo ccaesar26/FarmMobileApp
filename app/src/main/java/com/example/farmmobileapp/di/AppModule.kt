@@ -13,13 +13,15 @@ import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import org.koin.android.ext.koin.androidContext
-import org.koin.core.module.dsl.viewModel
+import org.koin.androidx.viewmodel.dsl.viewModelOf
+import org.koin.core.module.dsl.bind
+import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
 val appModule = module {
     single { androidContext() }
-    single { StringResourcesHelper(get()) }
-    single<TokenManager> { EncryptedTokenManager(get()) }
+    singleOf(::StringResourcesHelper)
+    singleOf(::EncryptedTokenManager) { bind<TokenManager>() }
 
     single {
         HttpClient(Android) { // Ktor HttpClient setup
@@ -28,8 +30,8 @@ val appModule = module {
             }
         }
     }
-    single<IdentityApi> { KtorIdentityApi(get()) }
+    singleOf(::KtorIdentityApi) { bind<IdentityApi>() }
 
-    viewModel { LoginViewModel(get(), get(), get()) }
-    viewModel { MainViewModel() }
+    viewModelOf(::LoginViewModel)
+    viewModelOf(::MainViewModel)
 }
