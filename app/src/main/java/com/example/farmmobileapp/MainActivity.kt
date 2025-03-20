@@ -15,7 +15,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.farmmobileapp.ui.screens.LoginScreen
 import com.example.farmmobileapp.ui.screens.MainScreen
-import com.example.farmmobileapp.ui.theme.AppTheme
+import com.example.farmmobileapp.ui.theme.FarmMobileAppTheme
 import com.example.farmmobileapp.ui.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -26,7 +26,7 @@ class MainActivity : ComponentActivity() {
 
         enableEdgeToEdge()
         setContent {
-            AppTheme {
+            FarmMobileAppTheme {
                 AppNavigation()
             }
         }
@@ -73,7 +73,7 @@ fun AppNavigation() {
 @Preview(showBackground = true)
 @Composable
 fun AppPreview() {
-    AppTheme {
+    FarmMobileAppTheme {
         AppNavigation() // Preview the navigation setup
     }
 }
