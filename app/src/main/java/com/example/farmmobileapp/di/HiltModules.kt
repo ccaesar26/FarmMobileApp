@@ -3,6 +3,9 @@ package com.example.farmmobileapp.di
 import android.content.Context
 import com.example.farmmobileapp.data.api.IdentityApi
 import com.example.farmmobileapp.data.api.KtorIdentityApi
+import com.example.farmmobileapp.data.api.KtorUsersApi
+import com.example.farmmobileapp.data.api.UsersApi
+import com.example.farmmobileapp.data.storage.AuthenticationManager
 import com.example.farmmobileapp.data.storage.EncryptedTokenManager
 import com.example.farmmobileapp.data.storage.TokenManager
 import com.example.farmmobileapp.util.StringResourcesHelper
@@ -41,8 +44,20 @@ object AppModules {
 
     @Provides
     @Singleton
+    fun provideUsersApi(httpClient: HttpClient, tokenManager: TokenManager): UsersApi {
+        return KtorUsersApi(httpClient, tokenManager)
+    }
+
+    @Provides
+    @Singleton
     fun provideStringResourcesHelper(@ApplicationContext context: Context): StringResourcesHelper {
         return StringResourcesHelper(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideAuthenticationManager(tokenManager: TokenManager) : AuthenticationManager {
+        return AuthenticationManager(tokenManager)
     }
 }
 

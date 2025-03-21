@@ -6,4 +6,6 @@
     <string name="password_label">Password</string>
     <string name="login_button">Login</string>
     <string name="login_error_generic">Login failed. Please check your credentials.</string>
+    <string name="login_error_role_not_worker">Login failed: You are not authorized as a Worker.</string>
+    <string name="login_error_user_info">Login failed: Could not retrieve user information.</string>
 </resources>
