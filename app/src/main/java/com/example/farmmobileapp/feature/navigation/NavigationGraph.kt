@@ -9,6 +9,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.farmmobileapp.feature.auth.presentation.LoginScreen
+import com.example.farmmobileapp.feature.tasks.presentation.TasksScreen
 import com.example.farmmobileapp.main.MainScreen
 import com.example.farmmobileapp.main.MainViewModel
 
@@ -28,6 +29,9 @@ fun NavigationGraph() {
         }
         composable(route = NavigationRoutes.Main.route) {
             MainScreen()
+        }
+        composable(route = NavigationRoutes.Tasks.route) {
+             TasksScreen()
         }
     }
 

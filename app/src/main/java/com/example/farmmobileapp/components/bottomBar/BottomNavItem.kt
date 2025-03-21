@@ -5,6 +5,7 @@ import androidx.compose.material.icons.rounded.Campaign
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.ViewDay
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.example.farmmobileapp.feature.navigation.NavigationRoutes
 
 data class BottomNavItem(
     val name: String,
@@ -17,7 +18,7 @@ object BottomNavItems {
         BottomNavItem(
             name = "Tasks",
             icon = Icons.Rounded.ViewDay,
-            route = "tasks"
+            route = NavigationRoutes.Tasks.route
         ),
         BottomNavItem(
             name = "Report",

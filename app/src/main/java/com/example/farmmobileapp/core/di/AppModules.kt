@@ -5,6 +5,10 @@ import com.example.farmmobileapp.feature.auth.data.api.IdentityApi
 import com.example.farmmobileapp.feature.auth.data.api.KtorIdentityApi
 import com.example.farmmobileapp.core.storage.AuthenticationManager
 import com.example.farmmobileapp.core.storage.TokenManager
+import com.example.farmmobileapp.feature.tasks.data.api.FieldsApi
+import com.example.farmmobileapp.feature.tasks.data.api.KtorFieldsApi
+import com.example.farmmobileapp.feature.tasks.data.api.KtorTasksApi
+import com.example.farmmobileapp.feature.tasks.data.api.TasksApi
 import com.example.farmmobileapp.feature.users.data.api.KtorUsersApi
 import com.example.farmmobileapp.feature.users.data.api.UsersApi
 import com.example.farmmobileapp.util.StringResourcesHelper
@@ -44,6 +48,18 @@ object AppModules {
     @Singleton
     fun provideUsersApi(httpClient: HttpClient, tokenManager: TokenManager): UsersApi {
         return KtorUsersApi(httpClient, tokenManager)
+    }
+
+    @Provides
+    @Singleton
+    fun provideTasksApi(httpClient: HttpClient, tokenManager: TokenManager): TasksApi {
+        return KtorTasksApi(httpClient, tokenManager)
+    }
+
+    @Provides
+    @Singleton
+    fun provideFieldsApi(httpClient: HttpClient, tokenManager: TokenManager): FieldsApi {
+        return KtorFieldsApi(httpClient, tokenManager)
     }
 
     @Provides

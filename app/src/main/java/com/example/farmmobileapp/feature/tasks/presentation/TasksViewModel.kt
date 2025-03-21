@@ -1,0 +1,50 @@
+package com.example.farmmobileapp.feature.tasks.presentation
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.farmmobileapp.feature.tasks.domain.repository.TasksRepository
+import com.example.farmmobileapp.util.Resource
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import javax.inject.Inject
+
+@HiltViewModel
+class TasksViewModel @Inject constructor(
+    private val tasksRepository: TasksRepository
+) : ViewModel() {
+
+    private val _state = MutableStateFlow(TasksState())
+    val state: StateFlow<TasksState> = _state.asStateFlow()
+
+    init {
+        loadTasks()
+    }
+
+    private fun loadTasks() {
+        viewModelScope.launch {
+            _state.value = state.value.copy(isLoading = true)
+            when (val result = tasksRepository.getMyTasks()) {
+                is Resource.Success -> {
+                    _state.value = state.value.copy(
+                        isLoading = false,
+                        tasks = result.data ?: emptyList(),
+                        error = null
+                    )
+                }
+                is Resource.Error -> {
+                    _state.value = state.value.copy(
+                        isLoading = false,
+                        tasks = emptyList(),
+                        error = result.message ?: "Failed to load tasks"
+                    )
+                }
+                is Resource.Loading<*> -> {
+                    _state.value = state.value.copy(isLoading = true) // Already set at start, but for completeness
+                }
+            }
+        }
+    }
+}
