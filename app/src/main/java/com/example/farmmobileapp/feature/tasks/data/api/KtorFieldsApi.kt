@@ -1,5 +1,6 @@
 package com.example.farmmobileapp.feature.tasks.data.api
 
+import android.util.Log
 import com.example.farmmobileapp.BuildConfig
 import com.example.farmmobileapp.core.storage.TokenManager
 import com.example.farmmobileapp.feature.tasks.data.model.Field
@@ -29,11 +30,14 @@ class KtorFieldsApi @Inject constructor(
             }
             if (response.status.isSuccess()) {
                 val field = response.body<Field>()
+                Log.d("KtorFieldsApi", "Field fetched successfully: $field")
                 Resource.Success(field)
             } else {
+                Log.d("KtorFieldsApi", "Failed to fetch field: ${response.status.description}")
                 Resource.Error("Failed to fetch field: ${response.status.description}")
             }
         } catch (e: Exception) {
+            Log.e("KtorFieldsApi", "Network error: ${e.message}", e)
             Resource.Error("Failed to fetch field: Network error - ${e.message}")
         }
     }
