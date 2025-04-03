@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.math.log
 
 @HiltViewModel
 class TasksViewModel @Inject constructor(
@@ -72,4 +73,34 @@ class TasksViewModel @Inject constructor(
             }
         }
     }
+
+    suspend fun getTaskById(taskId: String): TaskWithField? {
+        _state.value = state.value.copy(isLoading = true)
+
+        return when (val result = tasksRepository.getTaskById(taskId)) {
+            is Resource.Success -> {
+                val taskDto = result.data ?: return null
+
+                val fieldResult = fieldsRepository.getField(taskDto.fieldId.toString())
+                val field = if (fieldResult is Resource.Success) fieldResult.data else null
+
+                Log.d("TasksViewModel", "Task: ${taskDto.title}, Field: ${field?.name ?: "No field found"}")
+
+                _state.value = state.value.copy(isLoading = false, error = null)
+                TaskWithField(taskDto, field)
+            }
+
+            is Resource.Error -> {
+                _state.value = state.value.copy(isLoading = false, error = result.message ?: "Failed to load task")
+                Log.e("TasksViewModel", "Error loading task with ID $taskId: ${result.message}")
+                null
+            }
+
+            is Resource.Loading -> {
+                _state.value = state.value.copy(isLoading = true)
+                null
+            }
+        }
+    }
+
 }

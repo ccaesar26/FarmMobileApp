@@ -13,4 +13,8 @@ class TasksRepositoryImpl @Inject constructor(
     override suspend fun getMyTasks(): Resource<List<TaskDto>> {
         return tasksApi.getMyTasks()
     }
+
+    override suspend fun getTaskById(taskId: String): Resource<TaskDto> {
+        return tasksApi.getTaskById(taskId)
+    }
 }

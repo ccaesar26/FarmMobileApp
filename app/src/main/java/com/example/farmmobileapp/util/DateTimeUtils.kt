@@ -9,10 +9,7 @@ object DateTimeUtils {
     private val backendDateTimeFormatter = DateTimeFormatter.ISO_DATE_TIME // Assumes backend sends ISO_DATE_TIME format
     private val userFriendlyDateFormatter = DateTimeFormatter.ofPattern("MMM d, yyyy HH:mm") // Example: "Jul 20, 2024 10:30 AM"
 
-    fun formatBackendDateTimeToUserFriendly(dateTimeString: String?): String? {
-        if (dateTimeString.isNullOrBlank()) {
-            return null // Or return "N/A" or handle null dates as needed
-        }
+    fun formatBackendDateTimeToUserFriendly(dateTimeString: String): String {
         return try {
             val dateTime = LocalDateTime.parse(dateTimeString, backendDateTimeFormatter)
             dateTime.format(userFriendlyDateFormatter)

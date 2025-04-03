@@ -40,4 +40,22 @@ class KtorTasksApi @Inject constructor(
             Resource.Error("Failed to fetch tasks: Network error - ${e.message}")
         }
     }
+
+    override suspend fun getTaskById(id: String): Resource<TaskDto> {
+        return try {
+            val token = tokenManager.getToken() ?: return Resource.Error("No token available")
+            val response = httpClient.get("$baseUrl/tasks/$id") {
+                header(HttpHeaders.Authorization, "Bearer $token")
+                contentType(ContentType.Application.Json)
+            }
+            if (response.status.isSuccess()) {
+                val task = response.body<TaskDto>()
+                Resource.Success(task)
+            } else {
+                Resource.Error("Failed to fetch task: ${response.status.description}")
+            }
+        } catch (e: Exception) {
+            Resource.Error("Failed to fetch task: Network error - ${e.message}")
+        }
+    }
 }

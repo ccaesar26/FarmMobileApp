@@ -10,13 +10,14 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import kotlin.collections.forEach
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FarmTopBar(title: String, actions: List<TopBarAction>) {
+fun FarmTopBar(title: @Composable() () -> Unit, actions: List<TopBarAction>) {
     TopAppBar(
-        title = { Text(title) },
+        title = title,
         actions = {
             actions.forEach { action ->
                 IconButton(onClick = action.onClick) {

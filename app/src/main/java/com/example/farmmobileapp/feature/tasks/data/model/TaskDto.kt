@@ -21,7 +21,8 @@ data class TaskDto(
     val categoryName: String? = null,
     @Serializable(with = RecurrenceTypeSerializer::class) val recurrence: RecurrenceType,
     val recurrenceEndDate: String? = null,
-    val fieldId: String,
+    val fieldId: String? = null,
+    val cropId: String? = null,
     val commentsCount: Int,
     val createdAt: String
 )

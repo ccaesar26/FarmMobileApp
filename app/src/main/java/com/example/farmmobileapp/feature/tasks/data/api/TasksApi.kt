@@ -5,4 +5,5 @@ import com.example.farmmobileapp.util.Resource
 
 interface TasksApi {
     suspend fun getMyTasks(): Resource<List<TaskDto>>
+    suspend fun getTaskById(id: String): Resource<TaskDto>
 }

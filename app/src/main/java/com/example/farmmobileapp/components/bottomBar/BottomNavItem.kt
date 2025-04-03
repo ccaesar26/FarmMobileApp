@@ -23,12 +23,12 @@ object BottomNavItems {
         BottomNavItem(
             name = "Report",
             icon = Icons.Rounded.Campaign,
-            route = "report"
+            route = NavigationRoutes.Reports.route
         ),
         BottomNavItem(
             name = "Profile",
             icon = Icons.Rounded.Person,
-            route = "profile"
+            route = NavigationRoutes.Profile.route
         )
     )
 }

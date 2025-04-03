@@ -6,9 +6,13 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.farmmobileapp.feature.auth.presentation.LoginScreen
 import com.example.farmmobileapp.feature.tasks.data.model.TaskDto
 import com.example.farmmobileapp.feature.tasks.data.model.enums.RecurrenceType
@@ -37,30 +41,6 @@ fun AppNavigationGraph() {
         }
         composable(route = NavigationRoutes.Main.route) {
             MainScreen()
-        }
-        composable(route = NavigationRoutes.Tasks.route) {
-            TasksScreen(navController = navController) // Pass navController to TasksScreen
-        }
-        composable(
-            route = NavigationRoutes.TaskDetail.route,
-//            arguments = listOf(navArgument(name = "taskId") {
-//                type = NavType.StringType
-//            }) // Define taskId argument
-        ) { backStackEntry ->
-//            val taskId = backStackEntry.arguments?.getString("taskId") // Extract taskId from route
-            // TODO: Fetch TaskWithField based on taskId (if needed) or pass it directly via navigation if available
-            // For now, just pass a dummy TaskWithField for demonstration
-            val dummyTaskWithField =
-                TasksScreenDefaults.dummyTaskWithField // Using dummy from TasksScreenDefaults for now
-            if (dummyTaskWithField != null) {
-                TaskDetailScreen(
-                    taskWithField = dummyTaskWithField,
-                    onBack = { navController.navigateUp() },
-                    navController = navController
-                ) // Pass onBack to navigateUp
-            } else {
-                Text("Error: Task details not available") // Handle case where dummyTaskWithField is null
-            }
         }
     }
 

@@ -1,5 +1,7 @@
 package com.example.farmmobileapp.feature.tasks.data.model.enums
 
+import androidx.compose.ui.graphics.Color
+import com.example.farmmobileapp.ui.theme.PrimeColors
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.descriptors.PrimitiveKind
@@ -8,12 +10,24 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 
+interface Colorable {
+    fun getColor(): Color
+}
+
 @Serializable
-enum class TaskPriority {
-    Low,
-    Medium,
-    High,
-    Urgent
+enum class TaskPriority : Colorable {
+    Low {
+        override fun getColor() = PrimeColors.Green.color500
+    },
+    Medium {
+        override fun getColor() = PrimeColors.Yellow.color500
+    },
+    High {
+        override fun getColor() = PrimeColors.Orange.color500
+    },
+    Urgent {
+        override fun getColor() = PrimeColors.Red.color500
+    }
 }
 
 object TaskPrioritySerializer : KSerializer<TaskPriority> {
