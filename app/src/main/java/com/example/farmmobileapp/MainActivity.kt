@@ -6,7 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.farmmobileapp.feature.navigation.NavigationGraph
+import com.example.farmmobileapp.feature.navigation.AppNavigationGraph
 import com.example.farmmobileapp.ui.theme.FarmMobileAppTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -18,7 +18,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             FarmMobileAppTheme {
-                NavigationGraph()
+                AppNavigationGraph()
             }
         }
     }
@@ -30,6 +30,6 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun AppPreview() {
     FarmMobileAppTheme {
-        NavigationGraph() // Preview the navigation setup
+        AppNavigationGraph() // Preview the navigation setup
     }
 }

@@ -48,9 +48,11 @@ class TasksViewModel @Inject constructor(
                         }
                     }
 
+                    val tasksByStatusMap = tasksWithFields.groupBy { it.task.status }
+
                     _state.value = state.value.copy(
                         isLoading = false,
-                        tasks = tasksWithFields,
+                        tasksByStatus = tasksByStatusMap,
                         error = null
                     )
                 }
@@ -58,7 +60,7 @@ class TasksViewModel @Inject constructor(
                 is Resource.Error -> {
                     _state.value = state.value.copy(
                         isLoading = false,
-                        tasks = emptyList(),
+                        tasksByStatus = emptyMap(),
                         error = result.message ?: "Failed to load tasks"
                     )
                 }

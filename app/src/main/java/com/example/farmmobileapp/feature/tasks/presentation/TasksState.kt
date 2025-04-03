@@ -1,9 +1,9 @@
 package com.example.farmmobileapp.feature.tasks.presentation
 
-import com.example.farmmobileapp.feature.tasks.data.model.TaskDto
+import com.example.farmmobileapp.feature.tasks.data.model.enums.TaskStatus
 
 data class TasksState(
     val isLoading: Boolean = false,
-    val tasks: List<TaskWithField> = emptyList(),
+    val tasksByStatus: Map<TaskStatus, List<TaskWithField>> = emptyMap(),
     val error: String? = null
 )

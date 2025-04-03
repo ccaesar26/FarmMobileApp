@@ -48,7 +48,7 @@ fun MainScreen(viewModel: MainViewModel = hiltViewModel()) {
 fun MainScreenContent(navController: NavHostController) {
     NavHost(navController = navController, startDestination = BottomNavItems.items.first().route) {
         composable(BottomNavItems.items[0].route) {
-            TasksScreen() // Placeholder for Tasks Screen
+            TasksScreen(navController = navController) // Placeholder for Tasks Screen
         }
         composable(BottomNavItems.items[1].route) {
             ReportsScreen() // Placeholder for Report Screen
