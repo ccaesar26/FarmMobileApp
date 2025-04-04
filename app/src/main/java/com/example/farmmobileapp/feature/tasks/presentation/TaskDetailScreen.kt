@@ -1,5 +1,7 @@
 package com.example.farmmobileapp.feature.tasks.presentation
 
+import android.R.attr.fillColor
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,8 +16,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.PriorityHigh
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -23,7 +23,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -32,18 +31,24 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.farmmobileapp.R
-import com.example.farmmobileapp.feature.tasks.data.model.enums.TaskPriority
+import com.example.farmmobileapp.feature.tasks.data.model.computeCenter
 import com.example.farmmobileapp.feature.tasks.data.model.enums.TaskStatus
+import com.example.farmmobileapp.feature.tasks.data.model.toMapboxPolygon
+import com.example.farmmobileapp.ui.theme.PrimeColors
 import com.example.farmmobileapp.util.CategoryIconUtils
 import com.example.farmmobileapp.util.DateTimeUtils
-import java.util.UUID
-import androidx.compose.material3.Text as M3Text
+import com.mapbox.geojson.Point
+import com.mapbox.maps.extension.compose.MapboxMap
+import com.mapbox.maps.extension.compose.animation.viewport.rememberMapViewportState
+import com.mapbox.maps.extension.compose.annotation.generated.PolygonAnnotation
+import com.mapbox.maps.extension.compose.style.standard.MapboxStandardSatelliteStyle
 
 @Composable
 fun TaskDetailScreen(
@@ -92,7 +97,8 @@ fun TaskDetailScreen(
             // Task Title
             Row(
                 modifier = Modifier
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .padding(top = 16.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
@@ -118,63 +124,68 @@ fun TaskDetailScreen(
             }
 
             // Task Details
-            if (taskWithField.task.dueDate != null) TaskDetailItem(
-                label = "Due Date",
-                value = DateTimeUtils.formatBackendDateTimeToUserFriendly(taskWithField.task.dueDate),
-                leadingIcon = {
-                    Icon(
-                        painter = painterResource(id = R.drawable.calendar_clock_24px),
-                        contentDescription = "Due Date",
-                        modifier = Modifier.padding(4.dp)
-                    )
-                }
-            )
-            TaskDetailItem(
-                label = "Priority",
-                value = taskWithField.task.priority.name,
-                leadingIcon = {
-                    Icon(
-                        painter = painterResource(id = R.drawable.priority_high_24px),
-                        contentDescription = "Priority",
-                        modifier = Modifier.padding(horizontal = 4.dp)
-                    )
-                }
-            )
-            TaskDetailItem(
-                label = "Status",
-                value = taskWithField.task.status.name,
-                leadingIcon = {
-                    Icon(
-                        painter = painterResource(id = R.drawable.check_circle_24px),
-                        contentDescription = "Status",
-                        modifier = Modifier.padding(4.dp)
-                    )
-                }
-            )
-            TaskDetailItem(
-                label = "Recurrence",
-                value = taskWithField.task.recurrence.name,
-                leadingIcon = {
-                    Icon(
-                        painter = painterResource(id = R.drawable.event_repeat_24px),
-                        contentDescription = "Recurrence",
-                        modifier = Modifier.padding(4.dp)
-                    )
-                }
-            )
-            TaskDetailItem(
-                label = "Created At",
-                value = DateTimeUtils.formatBackendDateTimeToUserFriendly(taskWithField.task.createdAt),
-                leadingIcon = {
-                    Icon(
-                        painter = painterResource(id = R.drawable.today_24px),
-                        contentDescription = "Created At",
-                        modifier = Modifier.padding(4.dp)
-                    )
-                }
-            )
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp)
+            ) {
+                if (taskWithField.task.dueDate != null) TaskDetailItem(
+                    label = "Due Date",
+                    value = DateTimeUtils.formatBackendDateTimeToUserFriendly(taskWithField.task.dueDate),
+                    leadingIcon = {
+                        Icon(
+                            painter = painterResource(id = R.drawable.calendar_clock_24px),
+                            contentDescription = "Due Date",
+                            modifier = Modifier.padding(end = 4.dp)
+                        )
+                    }
+                )
+                TaskDetailItem(
+                    label = "Priority",
+                    value = taskWithField.task.priority.name,
+                    leadingIcon = {
+                        Icon(
+                            painter = painterResource(id = R.drawable.priority_high_24px),
+                            contentDescription = "Priority",
+                            modifier = Modifier.padding(end = 4.dp)
+                        )
+                    }
+                )
+                TaskDetailItem(
+                    label = "Status",
+                    value = taskWithField.task.status.name,
+                    leadingIcon = {
+                        Icon(
+                            painter = painterResource(id = R.drawable.check_circle_24px),
+                            contentDescription = "Status",
+                            modifier = Modifier.padding(end = 4.dp)
+                        )
+                    }
+                )
+                TaskDetailItem(
+                    label = "Recurrence",
+                    value = taskWithField.task.recurrence.name,
+                    leadingIcon = {
+                        Icon(
+                            painter = painterResource(id = R.drawable.event_repeat_24px),
+                            contentDescription = "Recurrence",
+                            modifier = Modifier.padding(end = 4.dp)
+                        )
+                    }
+                )
+                TaskDetailItem(
+                    label = "Created At",
+                    value = DateTimeUtils.formatBackendDateTimeToUserFriendly(taskWithField.task.createdAt),
+                    leadingIcon = {
+                        Icon(
+                            painter = painterResource(id = R.drawable.today_24px),
+                            contentDescription = "Created At",
+                            modifier = Modifier.padding(end = 4.dp)
+                        )
+                    }
+                )
 
-            // Assigned Users
+                // Assigned Users
 //            TaskDetailItem(
 //                label = "Assigned Users",
 //                value = if (taskWithField.task.assignedUserIds.isNotEmpty())
@@ -182,22 +193,54 @@ fun TaskDetailScreen(
 //                else "None"
 //            )
 
-            // Field Name (if exists)
-            taskWithField.field?.let {
-                TaskDetailItem(
-                    label = "Field",
-                    value = it.name,
-                    leadingIcon = {
-                        Icon(
-                            painter = painterResource(id = R.drawable.map_24px),
-                            contentDescription = "Field",
-                            modifier = Modifier.padding(4.dp)
-                        )
-                    }
-                )
-            }
+                // Field Name (if exists)
+                taskWithField.field?.let {
+                    TaskDetailItem(
+                        label = "Field",
+                        value = it.name,
+                        leadingIcon = {
+                            Icon(
+                                painter = painterResource(id = R.drawable.map_24px),
+                                contentDescription = "Field",
+                                modifier = Modifier.padding(end = 4.dp)
+                            )
+                        }
+                    )
 
-            Spacer(modifier = Modifier.fillMaxHeight())
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(256.dp)
+                            .padding(top = 8.dp)
+                            .clip(MaterialTheme.shapes.medium)
+                    ) {
+                        MapboxMap(
+                            modifier = Modifier
+                                .fillMaxSize(),
+                            mapViewportState = rememberMapViewportState {
+                                setCameraOptions {
+                                    zoom(13.0)
+                                    center(it.boundary.computeCenter())
+                                    pitch(0.0)
+                                    bearing(0.0)
+                                }
+                            },
+                            // Set Satellite style
+                            style = { MapboxStandardSatelliteStyle() }
+                        ) {
+                            PolygonAnnotation(
+                                points = it.boundary.toMapboxPolygon(),
+                            ) {
+                                fillColor = PrimeColors.Teal.color300
+                                fillOutlineColor = PrimeColors.Teal.color500
+                                fillOpacity = 0.5
+
+                            }
+                        }
+                    }
+                }
+            }
+//            Spacer(modifier = Modifier.fillMaxHeight())
 
             // Status Selection Dialog
             if (showStatusDialog) {
@@ -218,7 +261,9 @@ fun TaskDetailScreen(
 @Composable
 fun TaskDetailItem(label: String, value: String, leadingIcon: @Composable (() -> Unit)? = null) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {

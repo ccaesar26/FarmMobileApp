@@ -14,7 +14,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
-import com.example.farmmobileapp.components.bottomBar.BottomNavItems
 import com.example.farmmobileapp.feature.reports.presentation.ReportsScreen
 import com.example.farmmobileapp.feature.tasks.presentation.TaskDetailScreen
 import com.example.farmmobileapp.feature.tasks.presentation.TaskWithField

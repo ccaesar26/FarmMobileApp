@@ -1,7 +1,7 @@
 <resources>
-    <string name="app_name">FarmForge</string>
+    <string name="app_name">FarmInsight</string>
 
-    <string name="login_title">Farm App Login</string>
+    <string name="login_title">Welcome</string>
     <string name="email_label">Email</string>
     <string name="password_label">Password</string>
     <string name="login_button">Login</string>

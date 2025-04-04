@@ -1,6 +1,8 @@
 package com.example.farmmobileapp.core.di
 
 import android.content.Context
+import com.example.farmmobileapp.core.data.remote.api.ConfigApi
+import com.example.farmmobileapp.core.data.remote.api.KtorConfigApi
 import com.example.farmmobileapp.feature.auth.data.api.IdentityApi
 import com.example.farmmobileapp.feature.auth.data.api.KtorIdentityApi
 import com.example.farmmobileapp.core.storage.AuthenticationManager
@@ -60,6 +62,12 @@ object AppModules {
     @Singleton
     fun provideFieldsApi(httpClient: HttpClient, tokenManager: TokenManager): FieldsApi {
         return KtorFieldsApi(httpClient, tokenManager)
+    }
+
+    @Provides
+    @Singleton
+    fun provideConfigApi(httpClient: HttpClient, tokenManager: TokenManager): ConfigApi {
+        return KtorConfigApi(httpClient, tokenManager)
     }
 
     @Provides

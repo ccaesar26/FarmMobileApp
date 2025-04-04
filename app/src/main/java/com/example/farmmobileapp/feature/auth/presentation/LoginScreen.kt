@@ -11,6 +11,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -32,56 +33,59 @@ fun LoginScreen(viewModel: LoginViewModel = hiltViewModel()) {
     val password by viewModel.password.collectAsState()
     val loginState by viewModel.loginState.collectAsState()
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text(
-            text = stringResource(R.string.login_title), // Define string resource
-            fontSize = 24.sp,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
-
-        OutlinedTextField(
-            value = email,
-            onValueChange = viewModel::onEmailChanged,
-            label = { Text(stringResource(R.string.email_label)) }, // Define string resource
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        OutlinedTextField(
-            value = password,
-            onValueChange = viewModel::onPasswordChanged,
-            label = { Text(stringResource(R.string.password_label)) }, // Define string resource
-            visualTransformation = PasswordVisualTransformation(),
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(
-            onClick = { viewModel.login() },
-            modifier = Modifier.fillMaxWidth(),
-            enabled = loginState !is LoginViewModel.LoginState.Loading // Disable button while loading
+    Scaffold { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
-            Text(stringResource(R.string.login_button)) // Define string resource
-        }
-
-        if (loginState is LoginViewModel.LoginState.Error) {
             Text(
-                text = (loginState as LoginViewModel.LoginState.Error).message,
-                color = MaterialTheme.colorScheme.error,
-                modifier = Modifier.padding(top = 8.dp)
+                text = stringResource(R.string.login_title), // Define string resource
+                style = MaterialTheme.typography.headlineLarge,
+                modifier = Modifier.padding(bottom = 16.dp)
             )
-        }
 
-        if (loginState is LoginViewModel.LoginState.Loading) {
-            CircularProgressIndicator(modifier = Modifier.padding(top = 16.dp))
+            OutlinedTextField(
+                value = email,
+                onValueChange = viewModel::onEmailChanged,
+                label = { Text(stringResource(R.string.email_label)) }, // Define string resource
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            OutlinedTextField(
+                value = password,
+                onValueChange = viewModel::onPasswordChanged,
+                label = { Text(stringResource(R.string.password_label)) }, // Define string resource
+                visualTransformation = PasswordVisualTransformation(),
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(
+                onClick = { viewModel.login() },
+                modifier = Modifier.fillMaxWidth(),
+                enabled = loginState !is LoginViewModel.LoginState.Loading // Disable button while loading
+            ) {
+                Text(stringResource(R.string.login_button)) // Define string resource
+            }
+
+            if (loginState is LoginViewModel.LoginState.Error) {
+                Text(
+                    text = (loginState as LoginViewModel.LoginState.Error).message,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+            }
+
+            if (loginState is LoginViewModel.LoginState.Loading) {
+                CircularProgressIndicator(modifier = Modifier.padding(top = 16.dp))
+            }
         }
     }
 }
