@@ -1,7 +1,7 @@
 package com.example.farmmobileapp.core.di
 
 import android.content.Context
-import com.example.farmmobileapp.core.storage.EncryptedTokenManager
+import com.example.farmmobileapp.core.storage.EncryptedTokenRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -15,7 +15,7 @@ class EncryptedTokenManagerModule {
 
     @Provides
     @Singleton
-    fun provideEncryptedTokenManager(@ApplicationContext context: Context): EncryptedTokenManager {
-        return EncryptedTokenManager(context)
+    fun provideEncryptedTokenManager(@ApplicationContext context: Context): EncryptedTokenRepository {
+        return EncryptedTokenRepository(context)
     }
 }

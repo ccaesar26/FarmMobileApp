@@ -1,14 +1,11 @@
 package com.example.farmmobileapp.feature.tasks.presentation
 
-import android.R.attr.fillColor
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -24,6 +21,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,11 +30,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.example.farmmobileapp.R
 import com.example.farmmobileapp.feature.tasks.data.model.computeCenter
 import com.example.farmmobileapp.feature.tasks.data.model.enums.TaskStatus
@@ -44,7 +40,6 @@ import com.example.farmmobileapp.feature.tasks.data.model.toMapboxPolygon
 import com.example.farmmobileapp.ui.theme.PrimeColors
 import com.example.farmmobileapp.util.CategoryIconUtils
 import com.example.farmmobileapp.util.DateTimeUtils
-import com.mapbox.geojson.Point
 import com.mapbox.maps.extension.compose.MapboxMap
 import com.mapbox.maps.extension.compose.animation.viewport.rememberMapViewportState
 import com.mapbox.maps.extension.compose.annotation.generated.PolygonAnnotation
@@ -54,9 +49,8 @@ import com.mapbox.maps.extension.compose.style.standard.MapboxStandardSatelliteS
 fun TaskDetailScreen(
     taskWithField: TaskWithField,
     onBack: () -> Unit,
-    onUpdateStatus: (TaskStatus) -> Unit, // Callback for updating status
-    onMarkAsDone: () -> Unit, // Callback for marking task as done
-    navController: NavController
+    onUpdateStatus: (TaskStatus) -> Unit,
+    onMarkAsDone: () -> Unit
 ) {
     var showStatusDialog by remember { mutableStateOf(false) }
 
@@ -78,7 +72,10 @@ fun TaskDetailScreen(
 
                 // Mark as Done Button
                 Button(
-                    onClick = { onMarkAsDone() },
+                    onClick = {
+                        onMarkAsDone()
+                        onBack()
+                    },
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)
                 ) {
                     Text("Mark as Done")
@@ -246,10 +243,11 @@ fun TaskDetailScreen(
             if (showStatusDialog) {
                 StatusSelectionDialog(
                     currentStatus = taskWithField.task.status,
-                    onDismiss = { showStatusDialog = false },
-                    onStatusSelected = {
-                        onUpdateStatus(it)
+                    onDismiss = {
                         showStatusDialog = false
+                    },
+                    onSaveStatusChanges = {
+                        onUpdateStatus(it)
                     }
                 )
             }
@@ -283,9 +281,10 @@ fun TaskDetailItem(label: String, value: String, leadingIcon: @Composable (() ->
 fun StatusSelectionDialog(
     currentStatus: TaskStatus,
     onDismiss: () -> Unit,
-    onStatusSelected: (TaskStatus) -> Unit
+    onSaveStatusChanges: (TaskStatus) -> Unit
 ) {
-    val statuses = TaskStatus.entries // Get all TaskStatus values
+    val statuses = TaskStatus.entries
+    var selectedStatus by remember { mutableStateOf(currentStatus) }
 
     AlertDialog(
         onDismissRequest = { onDismiss() },
@@ -296,21 +295,33 @@ fun StatusSelectionDialog(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { onStatusSelected(status) },
+                            .clickable {
+                                selectedStatus = status
+                            },
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         RadioButton(
-                            selected = status == currentStatus,
-                            onClick = { onStatusSelected(status) }
+                            selected = selectedStatus == status,
+                            onClick = { selectedStatus = status },
                         )
                         Text(text = status.name, modifier = Modifier.padding(start = 8.dp))
                     }
                 }
             }
         },
+        dismissButton = {
+            TextButton(
+                onClick = { onDismiss() }
+            ) {
+                Text("Cancel")
+            }
+        },
         confirmButton = {
-            Button(onClick = onDismiss) {
-                Text("Close")
+            Button(onClick = {
+                onSaveStatusChanges(selectedStatus)
+                onDismiss()
+            }) {
+                Text("Save")
             }
         }
     )

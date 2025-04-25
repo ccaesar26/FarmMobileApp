@@ -26,10 +26,8 @@ class MainViewModel @Inject constructor(
         Log.d("MainViewModel", "MainViewModel initialized")
         // Load token when ViewModel is created AND user is authenticated
         viewModelScope.launch {
-            authenticationManager.isAuthenticated.collect { isAuthenticated ->
-                Log.d("MainViewModel", "isAuthenticated: $isAuthenticated")
-                if (isAuthenticated) {
-                    Log.d("MainViewModel", "User is authenticated, loading token...")
+            authenticationManager.isAuthenticated.collect { hasToken ->
+                if (hasToken) {
                     loadToken() // Load token only after authentication
                 } else {
                     _mapboxToken.value = null // Optionally clear token if logged out

@@ -12,24 +12,24 @@ import kotlinx.serialization.encoding.Encoder
 enum class TaskStatus {
     ToDo,
     InProgress,
+    OnHold,
     Completed,
-    OnHold
 }
 
 object TaskStatusSerializer : KSerializer<TaskStatus> {
     override val descriptor: SerialDescriptor =
-        PrimitiveSerialDescriptor("TaskStatus", PrimitiveKind.INT)
+        PrimitiveSerialDescriptor("status", PrimitiveKind.INT)
 
     override fun serialize(encoder: Encoder, value: TaskStatus) {
         encoder.encodeInt(value.ordinal) // Serialize to integer
     }
 
     override fun deserialize(decoder: Decoder): TaskStatus {
-        return when (val value = decoder.decodeInt()) {
+        return when (decoder.decodeInt()) {
             0 -> TaskStatus.ToDo
             1 -> TaskStatus.InProgress
-            2 -> TaskStatus.Completed
-            3 -> TaskStatus.OnHold
+            2 -> TaskStatus.OnHold
+            3 -> TaskStatus.Completed
             else -> TaskStatus.ToDo // Default or handle error
         }
     }

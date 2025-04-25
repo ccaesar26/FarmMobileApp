@@ -2,14 +2,8 @@ package com.example.farmmobileapp.feature.auth.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.farmmobileapp.R
-import com.example.farmmobileapp.feature.auth.data.api.IdentityApi
-import com.example.farmmobileapp.feature.users.data.api.UsersApi
-import com.example.farmmobileapp.core.storage.AuthenticationManager
-import com.example.farmmobileapp.core.storage.TokenManager
 import com.example.farmmobileapp.feature.auth.domain.repository.IdentityRepository
 import com.example.farmmobileapp.util.Resource
-import com.example.farmmobileapp.util.StringResourcesHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.MutableStateFlow

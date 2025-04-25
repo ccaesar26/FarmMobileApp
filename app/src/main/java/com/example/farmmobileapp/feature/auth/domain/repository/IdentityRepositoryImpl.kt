@@ -2,8 +2,9 @@ package com.example.farmmobileapp.feature.auth.domain.repository
 
 import com.example.farmmobileapp.R
 import com.example.farmmobileapp.core.storage.AuthenticationManager
-import com.example.farmmobileapp.core.storage.TokenManager
+import com.example.farmmobileapp.core.storage.TokenRepository
 import com.example.farmmobileapp.feature.auth.data.api.IdentityApi
+import com.example.farmmobileapp.feature.auth.data.model.RefreshTokenResponse
 import com.example.farmmobileapp.feature.users.data.api.UsersApi
 import com.example.farmmobileapp.util.Resource
 import com.example.farmmobileapp.util.StringResourcesHelper
@@ -12,7 +13,7 @@ import javax.inject.Inject
 class IdentityRepositoryImpl @Inject constructor(
     private val identityApi: IdentityApi,
     private val usersApi: UsersApi,
-    private val tokenManager: TokenManager,
+    private val tokenRepository: TokenRepository,
     private val authenticationManager: AuthenticationManager,
     private val stringResourcesHelper: StringResourcesHelper
 ) : IdentityRepository {
@@ -20,14 +21,19 @@ class IdentityRepositoryImpl @Inject constructor(
     override suspend fun loginAndCheckRole(email: String, password: String): Resource<Boolean> {
         when (val result = identityApi.login(email, password)) {
             is Resource.Success -> {
-                val token = result.data?.token
-                if (token.isNullOrEmpty()) {
+                val accessToken = result.data?.accessToken
+                val refreshToken = result.data?.refreshToken
+
+                if (accessToken.isNullOrEmpty()) {
                     authenticationManager.setAuthenticated(false)
-                    tokenManager.clearToken()
+                    tokenRepository.clearAccessToken()
+                    tokenRepository.clearRefreshToken()
                     return Resource.Error(stringResourcesHelper.getString(R.string.login_error_generic))
                 }
 
-                tokenManager.saveToken(token)
+                tokenRepository.saveAccessToken(accessToken)
+                refreshToken?.let { tokenRepository.saveRefreshToken(it) }
+
                 val roleResult = usersApi.getMe()
                 return when (roleResult) {
                     is Resource.Success -> {
@@ -36,14 +42,14 @@ class IdentityRepositoryImpl @Inject constructor(
                             Resource.Success(true)
                         } else {
                             authenticationManager.setAuthenticated(false)
-                            tokenManager.clearToken()
+                            tokenRepository.clearAccessToken()
                             Resource.Error(stringResourcesHelper.getString(R.string.login_error_role_not_worker))
                         }
                     }
 
                     is Resource.Error -> {
                         authenticationManager.setAuthenticated(false)
-                        tokenManager.clearToken()
+                        tokenRepository.clearAccessToken()
                         Resource.Error(
                             roleResult.message
                                 ?: stringResourcesHelper.getString(R.string.login_error_user_info)
@@ -69,5 +75,9 @@ class IdentityRepositoryImpl @Inject constructor(
                 return Resource.Error(stringResourcesHelper.getString(R.string.login_error_generic))
             }
         }
+    }
+
+    override suspend fun refreshToken(refreshToken: String): Resource<RefreshTokenResponse> {
+        return identityApi.refreshToken(refreshToken)
     }
 }

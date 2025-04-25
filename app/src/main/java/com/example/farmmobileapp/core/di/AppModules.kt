@@ -6,7 +6,7 @@ import com.example.farmmobileapp.core.data.remote.api.KtorConfigApi
 import com.example.farmmobileapp.feature.auth.data.api.IdentityApi
 import com.example.farmmobileapp.feature.auth.data.api.KtorIdentityApi
 import com.example.farmmobileapp.core.storage.AuthenticationManager
-import com.example.farmmobileapp.core.storage.TokenManager
+import com.example.farmmobileapp.core.storage.TokenRepository
 import com.example.farmmobileapp.feature.tasks.data.api.FieldsApi
 import com.example.farmmobileapp.feature.tasks.data.api.KtorFieldsApi
 import com.example.farmmobileapp.feature.tasks.data.api.KtorTasksApi
@@ -30,15 +30,15 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object AppModules {
 
-    @Provides
-    @Singleton
-    fun provideHttpClient(): HttpClient {
-        return HttpClient(Android) {
-            install(ContentNegotiation) {
-                json(Json { ignoreUnknownKeys = true })
-            }
-        }
-    }
+//    @Provides
+//    @Singleton
+//    fun provideHttpClient(): HttpClient {
+//        return HttpClient(Android) {
+//            install(ContentNegotiation) {
+//                json(Json { ignoreUnknownKeys = true })
+//            }
+//        }
+//    }
 
     @Provides
     @Singleton
@@ -48,26 +48,26 @@ object AppModules {
 
     @Provides
     @Singleton
-    fun provideUsersApi(httpClient: HttpClient, tokenManager: TokenManager): UsersApi {
-        return KtorUsersApi(httpClient, tokenManager)
+    fun provideUsersApi(httpClient: HttpClient, tokenRepository: TokenRepository): UsersApi {
+        return KtorUsersApi(httpClient, tokenRepository)
     }
 
     @Provides
     @Singleton
-    fun provideTasksApi(httpClient: HttpClient, tokenManager: TokenManager): TasksApi {
-        return KtorTasksApi(httpClient, tokenManager)
+    fun provideTasksApi(httpClient: HttpClient, tokenRepository: TokenRepository): TasksApi {
+        return KtorTasksApi(httpClient, tokenRepository)
     }
 
     @Provides
     @Singleton
-    fun provideFieldsApi(httpClient: HttpClient, tokenManager: TokenManager): FieldsApi {
-        return KtorFieldsApi(httpClient, tokenManager)
+    fun provideFieldsApi(httpClient: HttpClient, tokenRepository: TokenRepository): FieldsApi {
+        return KtorFieldsApi(httpClient, tokenRepository)
     }
 
     @Provides
     @Singleton
-    fun provideConfigApi(httpClient: HttpClient, tokenManager: TokenManager): ConfigApi {
-        return KtorConfigApi(httpClient, tokenManager)
+    fun provideConfigApi(httpClient: HttpClient, tokenRepository: TokenRepository): ConfigApi {
+        return KtorConfigApi(httpClient, tokenRepository)
     }
 
     @Provides
@@ -78,7 +78,7 @@ object AppModules {
 
     @Provides
     @Singleton
-    fun provideAuthenticationManager(tokenManager: TokenManager) : AuthenticationManager {
-        return AuthenticationManager(tokenManager)
+    fun provideAuthenticationManager(tokenRepository: TokenRepository, usersApi: UsersApi): AuthenticationManager {
+        return AuthenticationManager(tokenRepository, usersApi)
     }
 }

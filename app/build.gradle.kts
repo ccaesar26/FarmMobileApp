@@ -21,6 +21,7 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField("String", "BASE_URL", "\"${project.findProperty("BASE_URL")}\"")
+        buildConfigField("String", "SIGNALR_HUB_BASE_URL", "\"${project.findProperty("SIGNALR_HUB_BASE_URL")}\"")
     }
 
     buildTypes {
@@ -74,10 +75,13 @@ dependencies {
 
     implementation(libs.androidx.security.crypto.ktx)
 
+    implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.android)
+    implementation(libs.ktor.client.cio)
+    implementation(libs.ktor.client.auth)
     implementation(libs.ktor.client.content.negotiation)
-
     implementation(libs.ktor.serialization.kotlinx.json)
+    implementation(libs.ktor.client.logging)
 
     implementation(libs.kotlinx.coroutines.core)
 
@@ -87,4 +91,6 @@ dependencies {
 
     implementation(libs.mapbox.android)
     implementation(libs.mapbox.maps.compose)
+
+    implementation(libs.signalr)
 }

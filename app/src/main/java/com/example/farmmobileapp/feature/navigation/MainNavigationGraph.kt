@@ -15,6 +15,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
 import com.example.farmmobileapp.feature.reports.presentation.ReportsScreen
+import com.example.farmmobileapp.feature.tasks.data.model.enums.TaskStatus
 import com.example.farmmobileapp.feature.tasks.presentation.TaskDetailScreen
 import com.example.farmmobileapp.feature.tasks.presentation.TaskWithField
 import com.example.farmmobileapp.feature.tasks.presentation.TasksScreen
@@ -47,17 +48,25 @@ fun MainNavigationGraph(navController: NavHostController) {
                     taskWithField = tasksViewModel.getTaskById(taskId)
                 }
 
-                taskWithField?.let { task ->
+                taskWithField?.let { taskWithField ->
                     TaskDetailScreen(
-                        taskWithField = task,
-                        onBack = { navController.popBackStack() },  // Navigate back to TasksScreen
-                        onUpdateStatus = { status ->
-                            // Handle status update
+                        taskWithField = taskWithField,
+                        onBack = { navController.popBackStack() },
+                        onUpdateStatus = { newStatus ->
+                            tasksViewModel.updateTaskStatus(taskWithField.task.id, newStatus)
+                            // navigate to the same page with updated task and pop the back stack
+                            navController.navigate(NavigationRoutes.TaskDetail.createRoute(taskWithField.task.id)) {
+                                popUpTo(NavigationRoutes.TaskDetail.route) {
+                                    inclusive = true
+                                }
+                            }
                         },
                         onMarkAsDone = {
-                            // Handle mark as done
-                        },
-                        navController = navController
+                            tasksViewModel.updateTaskStatus(
+                                taskWithField.task.id,
+                                TaskStatus.Completed
+                            )
+                        }
                     )
                 } ?: CircularProgressIndicator()
             }

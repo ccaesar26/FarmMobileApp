@@ -15,3 +15,4 @@ abstract class FieldsModule {
     @Singleton
     abstract fun bindFieldsApi(fieldsRepositoryImpl: FieldsRepositoryImpl): FieldsRepository
 }
+

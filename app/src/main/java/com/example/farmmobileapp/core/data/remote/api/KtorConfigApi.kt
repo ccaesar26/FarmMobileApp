@@ -2,10 +2,8 @@ package com.example.farmmobileapp.core.data.remote.api
 
 import android.util.Log
 import com.example.farmmobileapp.BuildConfig
-import com.example.farmmobileapp.core.data.remote.api.ConfigApi
 import com.example.farmmobileapp.core.data.preferences.model.RetrieveResponse
-import com.example.farmmobileapp.core.storage.TokenManager
-import com.mapbox.maps.MapboxMapsOptions
+import com.example.farmmobileapp.core.storage.TokenRepository
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -15,13 +13,13 @@ import javax.inject.Inject
 
 class KtorConfigApi @Inject constructor(
     private val httpClient: HttpClient,
-    private val tokenManager: TokenManager
+    private val tokenRepository: TokenRepository
 ) : ConfigApi {
     private val baseUrl = BuildConfig.BASE_URL
 
     override suspend fun getMapboxAccessToken(): RetrieveResponse {
         return try {
-            val token = tokenManager.getToken() ?: throw Exception("No token available")
+            val token = tokenRepository.getAccessToken() ?: throw Exception("No token available")
             val response = httpClient.get("$baseUrl/config/retrieve/mapbox-access-token") {
                 header("Authorization", "Bearer $token")
             }

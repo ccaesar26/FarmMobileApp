@@ -1,7 +1,7 @@
 package com.example.farmmobileapp.feature.users.data.api
 
 import com.example.farmmobileapp.BuildConfig
-import com.example.farmmobileapp.core.storage.TokenManager
+import com.example.farmmobileapp.core.storage.TokenRepository
 import com.example.farmmobileapp.feature.users.data.model.UserRoleResponse
 import com.example.farmmobileapp.util.Resource
 import io.ktor.client.HttpClient
@@ -16,13 +16,13 @@ import javax.inject.Inject
 
 class KtorUsersApi @Inject constructor(
     private val httpClient: HttpClient,
-    private val tokenManager: TokenManager
+    private val tokenRepository: TokenRepository
 ) : UsersApi {
     private val baseUrl = BuildConfig.BASE_URL
 
     override suspend fun getMe(): Resource<UserRoleResponse> {
         return try {
-            val token = tokenManager.getToken()
+            val token = tokenRepository.getAccessToken()
                 ?: return Resource.Error("No token available") // Handle case where token is missing (shouldn't happen if called after login)
 
             val response = httpClient.get("$baseUrl/users/me") { // Your backend /users/me endpoint

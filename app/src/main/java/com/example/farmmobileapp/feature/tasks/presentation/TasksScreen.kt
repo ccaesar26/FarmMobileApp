@@ -5,7 +5,6 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -16,8 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.rounded.ArrowDropDown
 import androidx.compose.material.icons.rounded.ArrowDropUp
 import androidx.compose.material3.CircularProgressIndicator
@@ -36,7 +33,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -148,20 +144,20 @@ fun SectionHeader(status: TaskStatus, isExpanded: Boolean, onToggleExpand: () ->
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = when (status) {
                 TaskStatus.ToDo ->
-                    if (isSystemInDarkTheme()) PrimeColors.Sky.color700
-                    else PrimeColors.Sky.color300
+                    if (isSystemInDarkTheme()) PrimeColors.Sky.color800
+                    else PrimeColors.Sky.color200
 
                 TaskStatus.InProgress ->
-                    if (isSystemInDarkTheme()) PrimeColors.Amber.color700
-                    else PrimeColors.Amber.color300
+                    if (isSystemInDarkTheme()) PrimeColors.Amber.color800
+                    else PrimeColors.Amber.color200
 
                 TaskStatus.Completed ->
-                    if (isSystemInDarkTheme()) PrimeColors.Green.color700
-                    else PrimeColors.Green.color300
+                    if (isSystemInDarkTheme()) PrimeColors.Green.color800
+                    else PrimeColors.Green.color200
 
                 TaskStatus.OnHold ->
-                    if (isSystemInDarkTheme()) PrimeColors.Purple.color700
-                    else PrimeColors.Purple.color300
+                    if (isSystemInDarkTheme()) PrimeColors.Purple.color800
+                    else PrimeColors.Purple.color200
             },
             titleContentColor = MaterialTheme.colorScheme.onSurfaceVariant
         )

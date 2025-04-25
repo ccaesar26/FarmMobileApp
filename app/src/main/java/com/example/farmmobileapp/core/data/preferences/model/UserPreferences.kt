@@ -12,7 +12,8 @@ import java.util.Base64
 
 @Serializable
 data class UserPreferences(
-    val token: String? = null
+    val accessToken: String? = null,
+    val refreshToken: String? = null
 )
 
 object UserPreferencesSerializer : Serializer<UserPreferences> {
