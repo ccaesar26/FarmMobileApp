@@ -16,18 +16,18 @@ import javax.inject.Inject
 
 class KtorUsersApi @Inject constructor(
     private val httpClient: HttpClient,
-    private val tokenRepository: TokenRepository
+//    private val tokenRepository: TokenRepository
 ) : UsersApi {
     private val baseUrl = BuildConfig.BASE_URL
 
     override suspend fun getMe(): Resource<UserRoleResponse> {
         return try {
-            val token = tokenRepository.getAccessToken()
-                ?: return Resource.Error("No token available") // Handle case where token is missing (shouldn't happen if called after login)
+//            val token = tokenRepository.getAccessToken()
+//                ?: return Resource.Error("No token available") // Handle case where token is missing (shouldn't happen if called after login)
 
             val response = httpClient.get("$baseUrl/users/me") { // Your backend /users/me endpoint
                 contentType(ContentType.Application.Json)
-                header(HttpHeaders.Authorization, "Bearer $token") // Add Authorization header with JWT token
+//                header(HttpHeaders.Authorization, "Bearer $token") // Add Authorization header with JWT token
             }
             if (response.status.isSuccess()) {
                 val userRoleResponse = response.body<UserRoleResponse>()

@@ -135,7 +135,7 @@ object NetworkModule {
 
             // Optional: Default request configuration
             defaultRequest {
-                url("YOUR_BACKEND_BASE_URL/") // Set your base URL
+                url("http://10.0.2.2:5800/") // Set your base URL
                 contentType(ContentType.Application.Json)
             }
         }

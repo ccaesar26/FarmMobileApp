@@ -19,15 +19,15 @@ import javax.inject.Inject
 
 class KtorTasksApi @Inject constructor(
     private val httpClient: HttpClient,
-    private val tokenRepository: TokenRepository
+//    private val tokenRepository: TokenRepository
 ) : TasksApi {
     private val baseUrl = BuildConfig.BASE_URL
 
     override suspend fun getMyTasks(): Resource<List<TaskDto>> {
         return try {
-            val token = tokenRepository.getAccessToken() ?: return Resource.Error("No token available")
+//            val token = tokenRepository.getAccessToken() ?: return Resource.Error("No token available")
             val response = httpClient.get("$baseUrl/tasks/my") {
-                header(HttpHeaders.Authorization, "Bearer $token")
+//                header(HttpHeaders.Authorization, "Bearer $token")
                 contentType(ContentType.Application.Json)
             }
             if (response.status.isSuccess()) {
@@ -43,9 +43,9 @@ class KtorTasksApi @Inject constructor(
 
     override suspend fun getTaskById(id: String): Resource<TaskDto> {
         return try {
-            val token = tokenRepository.getAccessToken() ?: return Resource.Error("No token available")
+//            val token = tokenRepository.getAccessToken() ?: return Resource.Error("No token available")
             val response = httpClient.get("$baseUrl/tasks/$id") {
-                header(HttpHeaders.Authorization, "Bearer $token")
+//                header(HttpHeaders.Authorization, "Bearer $token")
                 contentType(ContentType.Application.Json)
             }
             if (response.status.isSuccess()) {
@@ -61,9 +61,9 @@ class KtorTasksApi @Inject constructor(
 
     override suspend fun updateStatus(taskId: String, status: TaskStatus): Resource<Unit> {
         return try {
-            val token = tokenRepository.getAccessToken() ?: return Resource.Error("No token available")
+//            val token = tokenRepository.getAccessToken() ?: return Resource.Error("No token available")
             val response = httpClient.put("$baseUrl/tasks/$taskId/status") { // Use httpClient.put and construct URL
-                header(HttpHeaders.Authorization, "Bearer $token")
+//                header(HttpHeaders.Authorization, "Bearer $token")
                 contentType(ContentType.Application.Json)
                 setBody(status.ordinal) // Set the TaskStatus enum as the request body
             }

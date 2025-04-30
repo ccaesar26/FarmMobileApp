@@ -17,15 +17,15 @@ import javax.inject.Inject
 
 class KtorFieldsApi @Inject constructor(
     private val httpClient: HttpClient,
-    private val tokenRepository: TokenRepository
+//    private val tokenRepository: TokenRepository
 ) : FieldsApi {
     private val baseUrl = BuildConfig.BASE_URL
 
     override suspend fun getField(fieldId: String): Resource<Field> {
         return try {
-            val token = tokenRepository.getAccessToken() ?: return Resource.Error("No token available")
+//            val token = tokenRepository.getAccessToken() ?: return Resource.Error("No token available")
             val response = httpClient.get("$baseUrl/fields/$fieldId") {
-                header(HttpHeaders.Authorization, "Bearer $token")
+//                header(HttpHeaders.Authorization, "Bearer $token")
                 contentType(ContentType.Application.Json)
             }
             if (response.status.isSuccess()) {

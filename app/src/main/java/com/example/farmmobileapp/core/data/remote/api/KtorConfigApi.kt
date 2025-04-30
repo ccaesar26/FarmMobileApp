@@ -13,15 +13,15 @@ import javax.inject.Inject
 
 class KtorConfigApi @Inject constructor(
     private val httpClient: HttpClient,
-    private val tokenRepository: TokenRepository
+//    private val tokenRepository: TokenRepository
 ) : ConfigApi {
     private val baseUrl = BuildConfig.BASE_URL
 
     override suspend fun getMapboxAccessToken(): RetrieveResponse {
         return try {
-            val token = tokenRepository.getAccessToken() ?: throw Exception("No token available")
+//            val token = tokenRepository.getAccessToken() ?: throw Exception("No token available")
             val response = httpClient.get("$baseUrl/config/retrieve/mapbox-access-token") {
-                header("Authorization", "Bearer $token")
+//                header("Authorization", "Bearer $token")
             }
             if (response.status.isSuccess()) {
                 Log.d("KtorConfigApi", "Response: ${response.status}")
