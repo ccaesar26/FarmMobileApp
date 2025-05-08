@@ -15,13 +15,6 @@ import dagger.hilt.components.SingletonComponent
 @Module
 @InstallIn(SingletonComponent::class)
 class AuthModule {
-    // Uncomment the following code to provide the IdentityRepository
-    // and remove the commented-out code in the IdentityRepositoryImpl class.
-
-//    @Binds
-//    abstract fun bindIdentityRepository(identityRepositoryImpl: IdentityRepositoryImpl): IdentityRepository
-
-//     Uncomment this function to provide the IdentityRepositoryImpl
 
     @Provides
     fun provideIdentityRepository(

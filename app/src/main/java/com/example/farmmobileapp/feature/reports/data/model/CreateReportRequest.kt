@@ -7,6 +7,7 @@ import kotlinx.serialization.Serializable
 data class CreateReportRequest(
     @SerialName("Title") val title: String, // Match backend casing if necessary
     @SerialName("Description") val description: String,
-    @SerialName("ImageUrl") val imageUrl: String?, // Make nullable if optional
+    @SerialName("ImageData") val imageDataBase64: String?, // Send bytes as Base64 encoded String
+    @SerialName("ImageMimeType") val imageMimeType: String?,
     @SerialName("FieldId") val fieldId: String
 )

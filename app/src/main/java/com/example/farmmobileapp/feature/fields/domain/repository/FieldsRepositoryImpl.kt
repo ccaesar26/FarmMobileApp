@@ -1,7 +1,7 @@
-package com.example.farmmobileapp.feature.tasks.domain.repository
+package com.example.farmmobileapp.feature.fields.domain.repository
 
-import com.example.farmmobileapp.feature.tasks.data.api.FieldsApi
-import com.example.farmmobileapp.feature.tasks.data.model.Field
+import com.example.farmmobileapp.feature.fields.data.api.FieldsApi
+import com.example.farmmobileapp.feature.fields.data.model.Field
 import com.example.farmmobileapp.util.Resource
 import javax.inject.Inject
 

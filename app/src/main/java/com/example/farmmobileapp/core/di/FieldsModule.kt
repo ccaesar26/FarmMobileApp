@@ -1,7 +1,7 @@
 package com.example.farmmobileapp.core.di
 
-import com.example.farmmobileapp.feature.tasks.domain.repository.FieldsRepository
-import com.example.farmmobileapp.feature.tasks.domain.repository.FieldsRepositoryImpl
+import com.example.farmmobileapp.feature.fields.domain.repository.FieldsRepository
+import com.example.farmmobileapp.feature.fields.domain.repository.FieldsRepositoryImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

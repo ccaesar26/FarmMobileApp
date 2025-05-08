@@ -12,19 +12,8 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 abstract class MapboxModule {
 
-    // Uncomment the following code to provide the MapboxTokenRepository
-    // and remove the commented-out code in the MapboxTokenRepositoryImpl class.
-
      @Binds
      @Singleton
      abstract fun bindMapboxTokenRepository(mapboxTokenRepositoryImpl: MapboxTokenRepositoryImpl): MapboxTokenRepository
 
-    // Uncomment this function to provide the MapboxTokenRepositoryImpl
-
-    // @Provides
-    // fun provideMapboxTokenRepository(
-    //     tokenManager: TokenManager
-    // ): MapboxTokenRepository {
-    //     return MapboxTokenRepositoryImpl(tokenManager)
-    // }
 }

@@ -1,5 +1,6 @@
 package com.example.farmmobileapp.feature.reports.data.model
 
+import com.example.farmmobileapp.feature.reports.data.model.enums.ReportStatus
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -7,8 +8,9 @@ data class Report(
     val id: String,
     val title: String,
     val description: String,
-    val imageUrl: String?,
-    val status: Int, // Consider using an Enum if statuses are well-defined
+    val imageData: String?, // Base64 encoded image data
+    val imageMimeType: String?,
+    val status: ReportStatus, // Consider using an Enum if statuses are well-defined
     val fieldId: String,
     val farmId: String,
     val createdByUserId: String,

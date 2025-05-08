@@ -14,7 +14,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
-import com.example.farmmobileapp.feature.reports.presentation.ReportsScreen
+import com.example.farmmobileapp.feature.reports.presentation.CreateReportScreen
+import com.example.farmmobileapp.feature.reports.presentation.ReportDetailScreen
+import com.example.farmmobileapp.feature.reports.presentation.ReportDetailViewModel
+import com.example.farmmobileapp.feature.reports.presentation.ReportListScreen
 import com.example.farmmobileapp.feature.tasks.data.model.enums.TaskStatus
 import com.example.farmmobileapp.feature.tasks.presentation.TaskDetailScreen
 import com.example.farmmobileapp.feature.tasks.presentation.TaskWithField
@@ -71,11 +74,30 @@ fun MainNavigationGraph(navController: NavHostController) {
                 } ?: CircularProgressIndicator()
             }
         }
-        composable(NavigationRoutes.Reports.route) {
-            ReportsScreen() // Placeholder for Report Screen
+        navigation(
+            startDestination = NavigationRoutes.ReportsList.route,
+            route = NavigationRoutes.Reports.route
+        ) {
+            composable(route = NavigationRoutes.ReportsList.route) {
+                ReportListScreen(navController = navController)
+            }
+            composable(
+                route = NavigationRoutes.ReportDetail.route,
+                arguments = listOf(navArgument("reportId") { type = NavType.StringType })
+            ) { backStackEntry ->
+                val reportViewModel = hiltViewModel<ReportDetailViewModel>()
+
+                val reportId = backStackEntry.arguments?.getString("reportId") ?: return@composable
+                reportViewModel.reportId = reportId // Set the reportId in ViewModel
+
+                ReportDetailScreen(navController = navController)
+            }
+            composable(route = NavigationRoutes.ReportCreate.route) {
+                CreateReportScreen(navController = navController)
+            }
         }
         composable(NavigationRoutes.Profile.route) {
-            ProfileScreen() // Placeholder for Profile Screen
+            ProfileScreen(navController = navController)
         }
     }
 }

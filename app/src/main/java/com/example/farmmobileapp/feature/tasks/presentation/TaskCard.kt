@@ -4,10 +4,12 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.PriorityHigh
 import androidx.compose.material3.Card
@@ -57,9 +59,12 @@ fun TaskCard(
                     .fillMaxWidth()
             ) {
                 Row(
-                    verticalAlignment = Alignment.CenterVertically
-                )
-                {
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Start,
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(end = 8.dp)
+                ) {
                     Icon(
                         imageVector = Icons.Rounded.PriorityHigh,
                         contentDescription = "Priority",
@@ -71,7 +76,13 @@ fun TaskCard(
                         fontSize = 18.sp
                     )
                 }
-                CategoryIconUtils.GetIconForCategory(task.categoryName)
+                Box(
+                    modifier = Modifier
+                        .padding(4.dp)
+                        .align(Alignment.CenterVertically)
+                ) {
+                    CategoryIconUtils.GetIconForCategory(task.categoryName)
+                }
             }
 
             task.dueDate?.let { dueDate ->

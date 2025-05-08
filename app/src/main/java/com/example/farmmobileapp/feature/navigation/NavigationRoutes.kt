@@ -10,6 +10,13 @@ sealed class NavigationRoutes(val route: String) {
             return "taskDetail/$taskId"
         }
     }
-    data object Reports : NavigationRoutes("reports")
+    data object Reports : NavigationRoutes("reportsWithFields")
+    data object ReportsList : NavigationRoutes("reportList")
+    data object ReportDetail : NavigationRoutes("reportDetail/{reportId}") { // Route for ReportDetailScreen with reportId argument
+        fun createRoute(reportId: String): String {
+            return "reportDetail/$reportId"
+        }
+    }
+    data object ReportCreate : NavigationRoutes("reportCreate")
     data object Profile : NavigationRoutes("profile")
 }

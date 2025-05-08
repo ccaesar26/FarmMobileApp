@@ -38,9 +38,18 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             when (val result = identityRepository.loginAndCheckRole(email.value, password.value)) {
                 is Resource.Success -> _loginState.value = LoginState.Success
-                is Resource.Error -> _loginState.value = LoginState.Error(result.message ?: "Unknown error")
+                is Resource.Error -> {
+                    _loginState.value = LoginState.Error(result.message ?: "Unknown error")
+                    identityRepository.logout()
+                }
                 is Resource.Loading<*> -> { /* Already handled */ }
             }
+        }
+    }
+
+    fun logout() {
+        viewModelScope.launch {
+            identityRepository.logout()
         }
     }
 

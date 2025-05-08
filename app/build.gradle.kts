@@ -93,4 +93,12 @@ dependencies {
     implementation(libs.mapbox.maps.compose)
 
     implementation(libs.signalr)
+
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.ktor3)
+
+    implementation(platform(libs.supabase.bom))
+    implementation(libs.supabase.supabase.kt)
+    implementation(libs.supabase.auth.kt)
+    implementation(libs.supabase.storage.kt)
 }

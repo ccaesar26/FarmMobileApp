@@ -8,3 +8,4 @@ data class UserRoleResponse(
     val email: String,
     val role: String
 )
+

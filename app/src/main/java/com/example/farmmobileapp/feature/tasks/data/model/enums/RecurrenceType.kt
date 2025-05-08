@@ -26,7 +26,7 @@ object RecurrenceTypeSerializer : KSerializer<RecurrenceType> {
     }
 
     override fun deserialize(decoder: Decoder): RecurrenceType {
-        return when (val value = decoder.decodeInt()) {
+        return when (decoder.decodeInt()) {
             0 -> RecurrenceType.None
             1 -> RecurrenceType.Daily
             2 -> RecurrenceType.Weekly

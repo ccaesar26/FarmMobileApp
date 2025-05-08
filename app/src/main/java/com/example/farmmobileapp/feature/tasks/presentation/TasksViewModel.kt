@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.farmmobileapp.BuildConfig
 import com.example.farmmobileapp.feature.tasks.data.model.enums.TaskStatus
-import com.example.farmmobileapp.feature.tasks.domain.repository.FieldsRepository
+import com.example.farmmobileapp.feature.fields.domain.repository.FieldsRepository
 import com.example.farmmobileapp.feature.tasks.domain.repository.TasksRepository
 import com.example.farmmobileapp.util.Resource
 import com.microsoft.signalr.HubConnection
@@ -80,7 +80,7 @@ class TasksViewModel @Inject constructor(
         }
     }
 
-    private fun loadTasks() {
+    fun loadTasks() {
         viewModelScope.launch {
             _state.value = state.value.copy(isLoading = true)
             when (val result = tasksRepository.getMyTasks()) {
@@ -88,18 +88,38 @@ class TasksViewModel @Inject constructor(
                     val taskDtos = result.data ?: emptyList()
                     val tasksWithFields = mutableListOf<TaskWithField>()
                     taskDtos.forEach { taskDto ->
-                        fieldsRepository.getField(taskDto.fieldId.toString()).let {
-                            var field = when (it) {
-                                is Resource.Success -> it.data
-                                is Resource.Error -> null
-                                is Resource.Loading -> null
+                        taskDto.fieldId?.let {
+                            fieldsRepository.getField(it).let { fieldResult ->
+                                val field = when (fieldResult) {
+                                    is Resource.Success -> fieldResult.data
+                                    is Resource.Error -> null
+                                    is Resource.Loading -> null
+                                }
+                                tasksWithFields.add(TaskWithField(taskDto, field))
+                                Log.d(
+                                    "TasksViewModel",
+                                    "Task: ${taskDto.title}, Field: ${field?.name ?: "No field found"}"
+                                )
                             }
-                            tasksWithFields.add(TaskWithField(taskDto, field))
+                        } ?: run {
+                            tasksWithFields.add(TaskWithField(taskDto, null))
                             Log.d(
                                 "TasksViewModel",
-                                "Task: ${taskDto.title}, Field: ${field?.name ?: "No field found"}"
+                                "Task: ${taskDto.title}, Field: No field ID provided"
                             )
                         }
+//                        fieldsRepository.getField(taskDto.fieldId).let {
+//                            var field = when (it) {
+//                                is Resource.Success -> it.data
+//                                is Resource.Error -> null
+//                                is Resource.Loading -> null
+//                            }
+//                            tasksWithFields.add(TaskWithField(taskDto, field))
+//                            Log.d(
+//                                "TasksViewModel",
+//                                "Task: ${taskDto.title}, Field: ${field?.name ?: "No field found"}"
+//                            )
+//                        }
                     }
 
                     val tasksByStatusMap = tasksWithFields

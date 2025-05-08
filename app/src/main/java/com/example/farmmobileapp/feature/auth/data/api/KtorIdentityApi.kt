@@ -10,11 +10,11 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 
 class KtorIdentityApi(private val httpClient: HttpClient) : IdentityApi {
-    private val baseUrl = BuildConfig.BASE_URL
+    private val baseUrl = "api/identity"  //BuildConfig.BASE_URL
 
     override suspend fun login(email: String, password: String): Resource<LoginResponse> {
         return try {
-            val response = httpClient.post("$baseUrl/identity/login") { // Your backend login endpoint
+            val response = httpClient.post("$baseUrl/login") { // Your backend login endpoint
                 contentType(ContentType.Application.Json)
                 setBody(mapOf("email" to email, "password" to password)) // Request body
             }
@@ -31,7 +31,7 @@ class KtorIdentityApi(private val httpClient: HttpClient) : IdentityApi {
 
     override suspend fun logout(): Resource<Unit> {
         return try {
-            val response = httpClient.post("$baseUrl/identity/logout") { // Your backend logout endpoint
+            val response = httpClient.post("$baseUrl/logout") { // Your backend logout endpoint
                 contentType(ContentType.Application.Json)
             }
             if (response.status.isSuccess()) {
@@ -46,7 +46,7 @@ class KtorIdentityApi(private val httpClient: HttpClient) : IdentityApi {
 
     override suspend fun refreshToken(refreshToken: String): Resource<RefreshTokenResponse> {
         return try {
-            val response = httpClient.post("$baseUrl/identity/refresh-token") { // Your backend refresh token endpoint
+            val response = httpClient.post("$baseUrl/refresh-token") { // Your backend refresh token endpoint
                 contentType(ContentType.Application.Json)
                 setBody(mapOf("refreshToken" to refreshToken)) // Send refresh token in the body
             }

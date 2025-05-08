@@ -8,7 +8,7 @@ import com.example.farmmobileapp.feature.reports.data.model.Report
 interface ReportsRepository {
     suspend fun getAllReports(): List<Report>
     suspend fun getReportById(reportId: String): Report
-    suspend fun createReport(request: CreateReportRequest): Report
+    suspend fun createReport(request: CreateReportRequest): String
     suspend fun getCommentsForReport(reportId: String): List<Comment>
-    suspend fun addCommentToReport(reportId: String, request: AddCommentRequest): Comment
+    suspend fun addCommentToReport(reportId: String, request: AddCommentRequest): String
 }

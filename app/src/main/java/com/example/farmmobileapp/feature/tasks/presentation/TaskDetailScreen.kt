@@ -34,9 +34,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.farmmobileapp.R
-import com.example.farmmobileapp.feature.tasks.data.model.computeCenter
+import com.example.farmmobileapp.feature.fields.data.model.computeCenter
 import com.example.farmmobileapp.feature.tasks.data.model.enums.TaskStatus
-import com.example.farmmobileapp.feature.tasks.data.model.toMapboxPolygon
+import com.example.farmmobileapp.feature.fields.data.model.toMapboxPolygon
 import com.example.farmmobileapp.ui.theme.PrimeColors
 import com.example.farmmobileapp.util.CategoryIconUtils
 import com.example.farmmobileapp.util.DateTimeUtils
@@ -102,7 +102,8 @@ fun TaskDetailScreen(
                 Text(
                     text = taskWithField.task.title,
                     style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.weight(1f)
                 )
                 CategoryIconUtils.GetIconForCategory(
                     categoryName = taskWithField.task.categoryName,
@@ -182,14 +183,6 @@ fun TaskDetailScreen(
                     }
                 )
 
-                // Assigned Users
-//            TaskDetailItem(
-//                label = "Assigned Users",
-//                value = if (taskWithField.task.assignedUserIds.isNotEmpty())
-//                    taskWithField.task.assignedUserIds.joinToString(", ")
-//                else "None"
-//            )
-
                 // Field Name (if exists)
                 taskWithField.field?.let {
                     TaskDetailItem(
@@ -216,7 +209,7 @@ fun TaskDetailScreen(
                                 .fillMaxSize(),
                             mapViewportState = rememberMapViewportState {
                                 setCameraOptions {
-                                    zoom(13.0)
+                                    zoom(12.0)
                                     center(it.boundary.computeCenter())
                                     pitch(0.0)
                                     bearing(0.0)

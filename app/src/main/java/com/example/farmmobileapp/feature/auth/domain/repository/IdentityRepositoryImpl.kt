@@ -8,6 +8,7 @@ import com.example.farmmobileapp.feature.auth.data.model.RefreshTokenResponse
 import com.example.farmmobileapp.feature.users.data.api.UsersApi
 import com.example.farmmobileapp.util.Resource
 import com.example.farmmobileapp.util.StringResourcesHelper
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 class IdentityRepositoryImpl @Inject constructor(
@@ -31,8 +32,10 @@ class IdentityRepositoryImpl @Inject constructor(
                     return Resource.Error(stringResourcesHelper.getString(R.string.login_error_generic))
                 }
 
-                tokenRepository.saveAccessToken(accessToken)
-                refreshToken?.let { tokenRepository.saveRefreshToken(it) }
+                runBlocking {
+                    tokenRepository.saveAccessToken(accessToken)
+                    refreshToken?.let { tokenRepository.saveRefreshToken(it) }
+                }
 
                 val roleResult = usersApi.getMe()
                 return when (roleResult) {
@@ -75,6 +78,17 @@ class IdentityRepositoryImpl @Inject constructor(
                 return Resource.Error(stringResourcesHelper.getString(R.string.login_error_generic))
             }
         }
+    }
+
+    override suspend fun logout(): Resource<Unit> {
+        return identityApi.logout()
+            .also { result ->
+                if (result is Resource.Success) {
+                    authenticationManager.setAuthenticated(false)
+                }
+                tokenRepository.clearAccessToken()
+                tokenRepository.clearRefreshToken()
+            }
     }
 
     override suspend fun refreshToken(refreshToken: String): Resource<RefreshTokenResponse> {

@@ -1,5 +1,8 @@
 [versions]
-agp = "8.9.2"
+agp = "8.10.0"
+coilCompose = "3.1.0"
+githubBom = "3.1.4"
+supabase = "3.1.4"
 mapbox = "11.11.0"
 datastorePreferences = "1.1.4"
 hiltNavigation = "1.2.0"
@@ -29,6 +32,8 @@ androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-com
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 androidx-security-crypto-ktx = { module = "androidx.security:security-crypto-ktx", version.ref = "securityCryptoKtx" }
 androidx-ui-text-google-fonts = { module = "androidx.compose.ui:ui-text-google-fonts", version.ref = "uiTextGoogleFonts" }
+coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilCompose" }
+coil-network-ktor3 = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coilCompose" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
@@ -57,6 +62,10 @@ dagger-hilt-android-compiler = { module = "com.google.dagger:hilt-android-compil
 mapbox-android = { module = "com.mapbox.maps:android", version.ref = "mapbox" }
 mapbox-maps-compose = { module = "com.mapbox.extension:maps-compose", version.ref = "mapbox" }
 signalr = { module = "com.microsoft.signalr:signalr", version.ref = "signalr" }
+supabase-bom = { module = "io.github.jan-tennert.supabase:bom", version.ref = "githubBom" }
+supabase-supabase-kt = { module = "io.github.jan-tennert.supabase:supabase-kt" }
+supabase-auth-kt = { module = "io.github.jan-tennert.supabase:auth-kt" }
+supabase-storage-kt = { module = "io.github.jan-tennert.supabase:storage-kt" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

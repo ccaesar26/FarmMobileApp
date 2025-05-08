@@ -17,12 +17,12 @@ class ReportsRepositoryImpl @Inject constructor(
     override suspend fun getReportById(reportId: String): Report =
         reportsApi.getReportById(reportId)
 
-    override suspend fun createReport(request: CreateReportRequest): Report =
+    override suspend fun createReport(request: CreateReportRequest): String =
         reportsApi.createReport(request)
 
     override suspend fun getCommentsForReport(reportId: String): List<Comment> =
         reportsApi.getCommentsForReport(reportId)
 
-    override suspend fun addCommentToReport(reportId: String, request: AddCommentRequest): Comment =
+    override suspend fun addCommentToReport(reportId: String, request: AddCommentRequest): String =
         reportsApi.addCommentToReport(reportId, request)
 }

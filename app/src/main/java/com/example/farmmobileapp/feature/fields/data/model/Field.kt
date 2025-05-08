@@ -1,4 +1,4 @@
-package com.example.farmmobileapp.feature.tasks.data.model
+package com.example.farmmobileapp.feature.fields.data.model
 
 import com.mapbox.geojson.Point
 import kotlinx.serialization.Serializable

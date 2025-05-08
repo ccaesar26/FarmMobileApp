@@ -21,14 +21,14 @@ class KtorReportsApi @Inject constructor(
 
     // @Throws(Exception::class) // Or use a Result<T> wrapper
     override suspend fun getAllReports(): List<Report> {
-        return httpClient.get(reportsBasePath).body()
+        return httpClient.get("$reportsBasePath/my").body()
     }
 
     override suspend fun getReportById(reportId: String): Report {
         return httpClient.get("$reportsBasePath/$reportId").body()
     }
 
-    override suspend fun createReport(request: CreateReportRequest): Report {
+    override suspend fun createReport(request: CreateReportRequest): String {
         return httpClient.post(reportsBasePath) {
             contentType(ContentType.Application.Json)
             setBody(request)
@@ -39,7 +39,7 @@ class KtorReportsApi @Inject constructor(
         return httpClient.get("$reportsBasePath/$reportId/comments").body()
     }
 
-    override suspend fun addCommentToReport(reportId: String, request: AddCommentRequest): Comment {
+    override suspend fun addCommentToReport(reportId: String, request: AddCommentRequest): String {
         return httpClient.post("$reportsBasePath/$reportId/comments") {
             contentType(ContentType.Application.Json)
             setBody(request)
