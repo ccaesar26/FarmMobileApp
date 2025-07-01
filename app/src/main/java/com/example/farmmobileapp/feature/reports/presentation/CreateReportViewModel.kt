@@ -7,8 +7,11 @@ import android.util.Log
 import android.webkit.MimeTypeMap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.farmmobileapp.feature.fields.data.model.Field
+import com.example.farmmobileapp.feature.fields.domain.repository.FieldsRepository
 import com.example.farmmobileapp.feature.reports.data.model.CreateReportRequest
 import com.example.farmmobileapp.feature.reports.domain.repository.ReportsRepository
+import com.example.farmmobileapp.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,6 +31,7 @@ data class CreateReportUiState(
 @HiltViewModel
 class CreateReportViewModel @Inject constructor(
     private val reportRepository: ReportsRepository,
+    private val fieldsRepository: FieldsRepository,
     private val contentResolver: ContentResolver // Inject ContentResolver via Hilt (@ApplicationContext)
     // See Hilt setup below if not already done
 ) : ViewModel() {
@@ -38,6 +42,36 @@ class CreateReportViewModel @Inject constructor(
     // State to hold the selected image Uri (e.g., from an image picker)
     private val _selectedImageUri = MutableStateFlow<Uri?>(null)
     val selectedImageUri: StateFlow<Uri?> = _selectedImageUri.asStateFlow()
+
+    // List of all fields (from user's farm)
+    private val _fields = MutableStateFlow<List<Field>>(emptyList())
+    val fields: StateFlow<List<Field>> = _fields.asStateFlow()
+
+    private val _isFieldsLoading = MutableStateFlow(false)
+    val isFieldsLoading: StateFlow<Boolean> = _isFieldsLoading.asStateFlow()
+
+    init {
+        loadFields() // Load fields when ViewModel is created
+    }
+
+    private fun loadFields() {
+        viewModelScope.launch {
+            if (_isFieldsLoading.value) return@launch // Avoid concurrent loads
+            try {
+                _isFieldsLoading.value = true
+                val result = fieldsRepository.getFields()
+                if (result is Resource.Success) {
+                    _fields.value = result.data ?: emptyList()
+                } else {
+                    _uiState.update { it.copy(error = "Failed to load fields") }
+                }
+                _isFieldsLoading.value = false
+            } catch (e: Exception) {
+                _uiState.update { it.copy(error = "Error loading fields: ${e.message}") }
+                _isFieldsLoading.value = false
+            }
+        }
+    }
 
     fun onImageSelected(uri: Uri?) {
         _selectedImageUri.value = uri

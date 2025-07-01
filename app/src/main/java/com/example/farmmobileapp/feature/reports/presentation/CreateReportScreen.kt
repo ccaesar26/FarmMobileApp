@@ -13,9 +13,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
+//import androidx.compose.material3.ExposedDropdownMenuBoxScope.menuAnchor
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -31,6 +31,7 @@ import coil3.compose.rememberAsyncImagePainter
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.example.farmmobileapp.BuildConfig
+import com.example.farmmobileapp.feature.fields.data.model.Field
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -52,7 +53,8 @@ fun Context.createImageFileUri(): Uri {
 
     // Get the content URI using the FileProvider
     // IMPORTANT: Use the same authority string as declared in AndroidManifest.xml
-    val authority = "${BuildConfig.APPLICATION_ID}.fileprovider" // Or hardcode if necessary, but BuildConfig is better
+    val authority =
+        "${BuildConfig.APPLICATION_ID}.fileprovider" // Or hardcode if necessary, but BuildConfig is better
     return FileProvider.getUriForFile(
         this,
         authority,
@@ -68,7 +70,8 @@ fun CreateReportScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val selectedImageUri by viewModel.selectedImageUri.collectAsState()
-    val snackbarHostState = remember { SnackbarHostState() }
+    val fields by viewModel.fields.collectAsState() // Collect fields list
+    val isFieldsLoading by viewModel.isFieldsLoading.collectAsState() // Collect loading state
     val context = LocalContext.current
 
     // Temporary state to hold the URI for the camera capture
@@ -77,6 +80,11 @@ fun CreateReportScreen(
     // State for text fields, using rememberSaveable for process death survival
     var title by rememberSaveable { mutableStateOf("") }
     var description by rememberSaveable { mutableStateOf("") }
+
+    // --- State for Dropdown ---
+    var isDropdownExpanded by remember { mutableStateOf(false) }
+    // Store the currently selected Field object (or null)
+    var selectedField by remember { mutableStateOf<Field?>(null) }
 
     // --- Image Picker ---
     val imagePickerLauncher = rememberLauncherForActivityResult(
@@ -103,17 +111,6 @@ fun CreateReportScreen(
         }
     )
 
-    // --- Side Effects ---
-    LaunchedEffect(uiState.error) {
-        uiState.error?.let {
-            snackbarHostState.showSnackbar(
-                message = "Error: $it",
-                duration = SnackbarDuration.Long
-            )
-            viewModel.clearError() // Clear error after showing
-        }
-    }
-
     LaunchedEffect(uiState.creationSuccess) {
         if (uiState.creationSuccess) {
             navController.popBackStack()
@@ -121,169 +118,224 @@ fun CreateReportScreen(
         }
     }
 
-    // --- UI ---
-    Scaffold(
-        snackbarHost = { SnackbarHost(snackbarHostState) },
-        topBar = {
-            TopAppBar(
-                title = { Text("Create New Report") },
-                navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
-                    }
-                }
-            )
-        }
-    ) { paddingValues ->
-        Column(
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp) // Add padding around the content
+            .verticalScroll(rememberScrollState()) // Make content scrollable
+        ,
+        verticalArrangement = Arrangement.spacedBy(16.dp) // Space between elements
+    ) {
+        Text(
+            text = "Create New Report",
+            style = MaterialTheme.typography.headlineLarge,
+        )
+        // --- Title Input ---
+        OutlinedTextField(
+            value = title,
+            onValueChange = { title = it },
+            label = { Text("Title") },
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true,
+            enabled = !uiState.isCreating,
+            // isError = title.isBlank() && (attemptedSubmit) // Optional: Add validation indication
+        )
+
+        // --- Description Input ---
+        OutlinedTextField(
+            value = description,
+            onValueChange = { description = it },
+            label = { Text("Description") },
             modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(16.dp) // Add padding around the content
-                .verticalScroll(rememberScrollState()) // Make content scrollable
-            ,
-            verticalArrangement = Arrangement.spacedBy(16.dp) // Space between elements
+                .fillMaxWidth()
+                .heightIn(min = 100.dp), // Give description more space
+            enabled = !uiState.isCreating,
+            maxLines = 5
+            // isError = description.isBlank() && (attemptedSubmit) // Optional
+        )
+
+        // --- Field Dropdown Selector ---
+        // Use ExposedDropdownMenuBox for Material 3 dropdown
+        ExposedDropdownMenuBox(
+            expanded = isDropdownExpanded,
+            onExpandedChange = {
+                // Only allow expanding if fields are loaded and not creating report
+                if (!isFieldsLoading && !uiState.isCreating) {
+                    isDropdownExpanded = !isDropdownExpanded
+                }
+            },
+            modifier = Modifier.fillMaxWidth()
         ) {
-            // --- Title Input ---
-            OutlinedTextField(
-                value = title,
-                onValueChange = { title = it },
-                label = { Text("Title") },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                enabled = !uiState.isCreating,
-                // isError = title.isBlank() && (attemptedSubmit) // Optional: Add validation indication
-            )
-
-            // --- Description Input ---
-            OutlinedTextField(
-                value = description,
-                onValueChange = { description = it },
-                label = { Text("Description") },
+            OutlinedTextField( // Or use TextField if you prefer non-outlined
+                // Display the selected field's name, or a placeholder
+                value = selectedField?.name ?: if (isFieldsLoading) "Loading Fields..." else "Select a Field",
+                onValueChange = { /* Read-only, selection happens in dropdown items */ },
+                readOnly = true, // Important for dropdowns
+                label = { Text("Field") },
+                trailingIcon = {
+                    // Icon indicates it's a dropdown
+                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = isDropdownExpanded)
+                },
+                // Modifier to attach dropdown menu behavior
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(min = 100.dp), // Give description more space
-                enabled = !uiState.isCreating,
-                maxLines = 5
-                // isError = description.isBlank() && (attemptedSubmit) // Optional
+                    .menuAnchor(MenuAnchorType.PrimaryEditable)
+                    .fillMaxWidth(),
+                enabled = !isFieldsLoading && !uiState.isCreating, // Disable while loading/creating
+//                colors = ExposedDropdownMenuDefaults.textFieldColors() // Default M3 dropdown colors
             )
 
-            // --- Image Selection & Preview ---
-            Text("Image (Optional)", style = MaterialTheme.typography.titleMedium)
-
-            AnimatedVisibility(visible = selectedImageUri != null) {
-                Box(modifier = Modifier.fillMaxWidth()) {
-                    Image(
-                        painter = rememberAsyncImagePainter(
-                            ImageRequest.Builder(LocalContext.current)
-                                .data(selectedImageUri)
-                                .crossfade(true)
-                                // .placeholder(R.drawable.ic_placeholder_image) // Optional placeholder
-                                // .error(R.drawable.ic_placeholder_image) // Optional error placeholder
-                                .build()
-                        ),
-                        contentDescription = "Selected image preview",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(200.dp)
-                            .clip(RoundedCornerShape(8.dp))
-                            .border(
-                                1.dp,
-                                MaterialTheme.colorScheme.outline,
-                                RoundedCornerShape(8.dp)
-                            ),
-                        contentScale = ContentScale.Crop // Or ContentScale.Fit
+            // The actual dropdown menu content
+            ExposedDropdownMenu(
+                expanded = isDropdownExpanded,
+                onDismissRequest = { isDropdownExpanded = false }, // Close when clicking outside
+                modifier = Modifier
+                    .heightIn(max = 200.dp) // Limit height to avoid overflow
+            ) {
+                if (isFieldsLoading) {
+                    DropdownMenuItem( // Show loading indicator inside dropdown
+                        text = { CircularProgressIndicator(Modifier.size(24.dp)) },
+                        onClick = { /* No action */ },
+                        modifier = Modifier.align(Alignment.CenterHorizontally) // Doesn't work well here
                     )
-                    // Button to clear selection
-                    IconButton(
-                        onClick = { viewModel.onImageSelected(null) },
-                        modifier = Modifier
-                            .align(Alignment.TopEnd)
-                            .padding(4.dp)
-                            .size(32.dp) // Make it slightly larger for easier tapping
-                        // .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.7f), CircleShape) // Optional background
-                        ,
-                        enabled = !uiState.isCreating
-                    ) {
-                        Icon(
-                            Icons.Filled.Close,
-                            contentDescription = "Clear selected image",
-                            tint = MaterialTheme.colorScheme.onSurface
+                } else if (fields.isEmpty()) {
+                    DropdownMenuItem(
+                        text = { Text("No fields available") },
+                        onClick = { isDropdownExpanded = false },
+                        enabled = false
+                    )
+                } else {
+                    // Create items for each field
+                    fields.forEach { field ->
+                        DropdownMenuItem(
+                            text = { Text(field.name) }, // Display field name
+                            onClick = {
+                                selectedField = field // Update selected field state
+                                isDropdownExpanded = false // Close the dropdown
+                            }
                         )
                     }
                 }
             }
+        }
+        // --- End Field Dropdown Selector ---
 
-            // Button to launch image picker
-            Row {
-                Button(
-                    // Launch image taker
-                    onClick = {
-                        try {
-                            val uri = context.createImageFileUri() // Generate temp URI
-                            tempCameraUri = uri // Store it for the result handler
-                            takePictureLauncher.launch(uri) // Launch camera
-                        } catch (ex: Exception) {
-                            // Handle potential errors during file creation/URI generation
-                            Toast.makeText(context, "Error preparing camera: ${ex.message}", Toast.LENGTH_LONG).show()
-                            tempCameraUri = null
-                        }
-                    },
-                    modifier = Modifier.weight(1f),
-                    enabled = !uiState.isCreating
-                ) {
-                    Text(if (selectedImageUri == null) "Take Image" else "Retake Image")
-                }
-                Spacer(
-                    modifier = Modifier.width(8.dp)
+        // --- Image Selection & Preview ---
+        Text("Image (Optional)", style = MaterialTheme.typography.titleMedium)
+
+        AnimatedVisibility(visible = selectedImageUri != null) {
+            Box(modifier = Modifier.fillMaxWidth()) {
+                Image(
+                    painter = rememberAsyncImagePainter(
+                        ImageRequest.Builder(LocalContext.current)
+                            .data(selectedImageUri)
+                            .crossfade(true)
+                            // .placeholder(R.drawable.ic_placeholder_image) // Optional placeholder
+                            // .error(R.drawable.ic_placeholder_image) // Optional error placeholder
+                            .build()
+                    ),
+                    contentDescription = "Selected image preview",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                        .border(
+                            1.dp,
+                            MaterialTheme.colorScheme.outline,
+                            RoundedCornerShape(8.dp)
+                        ),
+                    contentScale = ContentScale.Crop // Or ContentScale.Fit
                 )
-                Button(
-                    onClick = { imagePickerLauncher.launch("image/*") }, // Launch image picker
-                    modifier = Modifier.weight(1f),
+                // Button to clear selection
+                IconButton(
+                    onClick = { viewModel.onImageSelected(null) },
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(4.dp)
+                        .size(32.dp) // Make it slightly larger for easier tapping
+                    // .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.7f), CircleShape) // Optional background
+                    ,
                     enabled = !uiState.isCreating
                 ) {
-                    Text(if (selectedImageUri == null) "Select Image" else "Change Image")
+                    Icon(
+                        Icons.Filled.Close,
+                        contentDescription = "Clear selected image",
+                        tint = MaterialTheme.colorScheme.onSurface
+                    )
                 }
             }
+        }
 
-            Spacer(modifier = Modifier.weight(1f)) // Push submit button towards bottom if content is short
-
-            // --- Submit Button ---
-            Row {
-                FilledTonalButton(
-                    onClick = {
-                        // Go back to previous screen
-                        navController.popBackStack()
-                    },
-                    modifier = Modifier.weight(1f),
-                ) {
-                    Text("Cancel")
-                }
-                Spacer(
-                    modifier = Modifier.width(8.dp)
-                )
-                Button(
-                    onClick = {
-                        // TODO: Replace "HARDCODED_FIELD_ID" with the actual field ID
-                        //       Get it from the ViewModel (preferred) or pass it to the Composable.
-                        val actualFieldId = "01956125-a9c2-71c9-bc08-fb1759bf5dfb"
-                        viewModel.createReport(title, description, actualFieldId)
-                    },
-                    modifier = Modifier.weight(1f),
-                    enabled = title.isNotBlank() && description.isNotBlank() && !uiState.isCreating
-                    // && actualFieldId.isNotBlank() // Add this check if fieldId comes from user input/selection on *this* screen
-                ) {
-                    if (uiState.isCreating) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(24.dp),
-                            color = MaterialTheme.colorScheme.onPrimary, // Make it visible on button background
-                            strokeWidth = 2.dp
-                        )
-                    } else {
-                        Text("Submit Report")
+        // Button to launch image picker
+        Row {
+            Button(
+                // Launch image taker
+                onClick = {
+                    try {
+                        val uri = context.createImageFileUri() // Generate temp URI
+                        tempCameraUri = uri // Store it for the result handler
+                        takePictureLauncher.launch(uri) // Launch camera
+                    } catch (ex: Exception) {
+                        // Handle potential errors during file creation/URI generation
+                        Toast.makeText(
+                            context,
+                            "Error preparing camera: ${ex.message}",
+                            Toast.LENGTH_LONG
+                        ).show()
+                        tempCameraUri = null
                     }
+                },
+                modifier = Modifier.weight(1f),
+                enabled = !uiState.isCreating
+            ) {
+                Text(if (selectedImageUri == null) "Take Image" else "Retake Image")
+            }
+            Spacer(
+                modifier = Modifier.width(8.dp)
+            )
+            Button(
+                onClick = { imagePickerLauncher.launch("image/*") }, // Launch image picker
+                modifier = Modifier.weight(1f),
+                enabled = !uiState.isCreating
+            ) {
+                Text(if (selectedImageUri == null) "Select Image" else "Change Image")
+            }
+        }
+
+        Spacer(modifier = Modifier.weight(1f)) // Push submit button towards bottom if content is short
+
+        // --- Submit Button ---
+        Row {
+            FilledTonalButton(
+                onClick = {
+                    // Go back to previous screen
+                    navController.popBackStack()
+                },
+                modifier = Modifier.weight(1f),
+            ) {
+                Text("Cancel")
+            }
+            Spacer(
+                modifier = Modifier.width(8.dp)
+            )
+            Button(
+                onClick = {
+                    viewModel.createReport(title, description, selectedField?.id ?: "")
+                },
+                modifier = Modifier.weight(1f),
+                enabled = title.isNotBlank() && description.isNotBlank() && selectedField != null && !uiState.isCreating
+            ) {
+                if (uiState.isCreating) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
+                        color = MaterialTheme.colorScheme.onPrimary, // Make it visible on button background
+                        strokeWidth = 2.dp
+                    )
+                } else {
+                    Text("Submit Report")
                 }
             }
         }
     }
+
 }

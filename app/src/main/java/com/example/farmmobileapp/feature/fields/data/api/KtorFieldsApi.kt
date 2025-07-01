@@ -35,4 +35,23 @@ class KtorFieldsApi @Inject constructor(
             Resource.Error("Failed to fetch field: Network error - ${e.message}")
         }
     }
+
+    override suspend fun getFields(): Resource<List<Field>> {
+        return try {
+            val response = httpClient.get("$baseUrl/all") {
+                contentType(ContentType.Application.Json)
+            }
+            if (response.status.isSuccess()) {
+                val fields = response.body<List<Field>>()
+                Log.d("KtorFieldsApi", "Fields fetched successfully: $fields")
+                Resource.Success(fields)
+            } else {
+                Log.d("KtorFieldsApi", "Failed to fetch fields: ${response.status.description}")
+                Resource.Error("Failed to fetch fields: ${response.status.description}")
+            }
+        } catch (e: Exception) {
+            Log.e("KtorFieldsApi", "Network error: ${e.message}", e)
+            Resource.Error("Failed to fetch fields: Network error - ${e.message}")
+        }
+    }
 }

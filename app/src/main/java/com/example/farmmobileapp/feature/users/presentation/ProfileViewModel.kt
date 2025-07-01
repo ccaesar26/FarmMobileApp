@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 // Import Repositories and Models
 import com.example.farmmobileapp.feature.auth.domain.repository.IdentityRepository
 import com.example.farmmobileapp.feature.users.domain.repository.UserRepository
+import com.example.farmmobileapp.main.MainViewModel
 import com.example.farmmobileapp.util.Resource // Import your Resource wrapper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,7 +20,6 @@ import javax.inject.Inject
 class ProfileViewModel @Inject constructor(
     private val userRepository: UserRepository,
     private val identityRepository: IdentityRepository
-    // Optional: Inject NavController or navigation events if logout needs to trigger global navigation change
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ProfileUiState())
@@ -76,10 +76,7 @@ class ProfileViewModel @Inject constructor(
                     _uiState.update {
                         it.copy(isLoggingOut = false, logoutSuccess = true, logoutError = null)
                     }
-                    // IMPORTANT: After successful logout, the token is likely cleared.
-                    // The app usually needs to navigate back to the Login screen.
-                    // This navigation logic might live here (e.g., emitting an event)
-                    // or be handled by observing the logoutSuccess flag in the UI layer.
+                    Log.d("ProfileViewModel", "Logout successful")
                 }
                 is Resource.Error -> {
                     _uiState.update {

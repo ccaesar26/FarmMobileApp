@@ -1,18 +1,18 @@
 package com.example.farmmobileapp.feature.tasks.data.api
 
 import com.example.farmmobileapp.BuildConfig
-import com.example.farmmobileapp.core.storage.TokenRepository
+import com.example.farmmobileapp.feature.tasks.data.model.CreateTaskCommentDto
+import com.example.farmmobileapp.feature.tasks.data.model.TaskCommentDto
 import com.example.farmmobileapp.feature.tasks.data.model.TaskDto
 import com.example.farmmobileapp.feature.tasks.data.model.enums.TaskStatus
 import com.example.farmmobileapp.util.Resource
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
-import io.ktor.client.request.header
+import io.ktor.client.request.post
 import io.ktor.client.request.put
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
-import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 import javax.inject.Inject
@@ -62,11 +62,12 @@ class KtorTasksApi @Inject constructor(
     override suspend fun updateStatus(taskId: String, status: TaskStatus): Resource<Unit> {
         return try {
 //            val token = tokenRepository.getAccessToken() ?: return Resource.Error("No token available")
-            val response = httpClient.put("$baseUrl/tasks/$taskId/status") { // Use httpClient.put and construct URL
+            val response =
+                httpClient.put("$baseUrl/tasks/$taskId/status") { // Use httpClient.put and construct URL
 //                header(HttpHeaders.Authorization, "Bearer $token")
-                contentType(ContentType.Application.Json)
-                setBody(status.ordinal) // Set the TaskStatus enum as the request body
-            }
+                    contentType(ContentType.Application.Json)
+                    setBody(status.ordinal) // Set the TaskStatus enum as the request body
+                }
             if (response.status.isSuccess()) {
                 Resource.Success(Unit) // Return Resource.Success<Unit> for successful update (NoContent)
             } else {
@@ -74,6 +75,38 @@ class KtorTasksApi @Inject constructor(
             }
         } catch (e: Exception) {
             Resource.Error("Failed to update task status: Network error - ${e.message}")
+        }
+    }
+
+    override suspend fun addComment(commentDto: CreateTaskCommentDto): Resource<Unit> {
+        return try {
+            val response = httpClient.post("$baseUrl/tasks/comment") {
+                contentType(ContentType.Application.Json)
+                setBody(commentDto)
+            }
+            if (response.status.isSuccess()) {
+                Resource.Success(Unit) // Return Resource.Success<Unit> for successful creation
+            } else {
+                Resource.Error("Failed to add comment: ${response.status.description}")
+            }
+        } catch (e: Exception) {
+            Resource.Error("Failed to add comment: Network error - ${e.message}")
+        }
+    }
+
+    override suspend fun getComments(taskId: String): Resource<List<TaskCommentDto>> {
+        return try {
+            val response = httpClient.get("$baseUrl/tasks/$taskId/comments") {
+                contentType(ContentType.Application.Json)
+            }
+            if (response.status.isSuccess()) {
+                val comments = response.body<List<TaskCommentDto>>()
+                Resource.Success(comments)
+            } else {
+                Resource.Error("Failed to fetch comments: ${response.status.description}")
+            }
+        } catch (e: Exception) {
+            Resource.Error("Failed to fetch comments: Network error - ${e.message}")
         }
     }
 }

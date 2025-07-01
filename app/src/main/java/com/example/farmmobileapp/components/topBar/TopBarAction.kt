@@ -13,14 +13,15 @@ data class TopBarAction(
 )
 
 object TopBarActions {
-    val actions = listOf(
-        TopBarAction(
-            icon = Icons.Rounded.Notifications,
-            onClick = { /* TODO: Implement Notification action */ }
-        ),
-        TopBarAction(
-            icon = Icons.Rounded.Settings,
-            onClick = { /* TODO: Implement Settings action */ }
-        )
-    )
+    val actions = emptyList<TopBarAction>()
+//        listOf(
+//        TopBarAction(
+//            icon = Icons.Rounded.Notifications,
+//            onClick = { /* TODO: Implement Notification action */ }
+//        ),
+//        TopBarAction(
+//            icon = Icons.Rounded.Settings,
+//            onClick = { /* TODO: Implement Settings action */ }
+//        )
+//    )
 }

@@ -12,6 +12,8 @@ import com.example.farmmobileapp.feature.reports.data.api.KtorReportsApi
 import com.example.farmmobileapp.feature.reports.data.api.ReportsApi
 import com.example.farmmobileapp.feature.fields.data.api.FieldsApi
 import com.example.farmmobileapp.feature.fields.data.api.KtorFieldsApi
+import com.example.farmmobileapp.feature.notifications.data.api.KtorNotificationsApi
+import com.example.farmmobileapp.feature.notifications.data.api.NotificationsApi
 import com.example.farmmobileapp.feature.tasks.data.api.KtorTasksApi
 import com.example.farmmobileapp.feature.tasks.data.api.TasksApi
 import com.example.farmmobileapp.feature.users.data.api.KtorUserProfileApi
@@ -69,6 +71,12 @@ object AppModules {
 
     @Provides
     @Singleton
+    fun provideNotificationsApi(httpClient: HttpClient): NotificationsApi {
+        return KtorNotificationsApi(httpClient)
+    }
+
+    @Provides
+    @Singleton
     fun provideConfigApi(httpClient: HttpClient): ConfigApi {
         return KtorConfigApi(httpClient)
     }
@@ -81,8 +89,8 @@ object AppModules {
 
     @Provides
     @Singleton
-    fun provideAuthenticationManager(tokenRepository: TokenRepository, usersApi: UsersApi): AuthenticationManager {
-        return AuthenticationManager(tokenRepository, usersApi)
+    fun provideAuthenticationManager(tokenRepository: TokenRepository, identityApi: IdentityApi, usersApi: UsersApi): AuthenticationManager {
+        return AuthenticationManager(tokenRepository, identityApi, usersApi)
     }
 
     @Provides

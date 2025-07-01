@@ -11,20 +11,23 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
 import com.example.farmmobileapp.components.bottomBar.FarmBottomBar
 import com.example.farmmobileapp.components.topBar.FarmTopBar
+import com.example.farmmobileapp.components.topBar.TopBarAction
 import com.example.farmmobileapp.components.topBar.TopBarActions
 import com.example.farmmobileapp.feature.navigation.MainNavigationGraph
+import com.example.farmmobileapp.feature.navigation.NavigationRoutes
 import com.example.farmmobileapp.ui.theme.PrimeColors
 import com.mapbox.common.MapboxOptions
+import com.example.farmmobileapp.R
 
 @Composable
 fun MainScreen(
-    mainViewModel: MainViewModel = hiltViewModel<MainViewModel>()
+    mainViewModel: MainViewModel
 ) {
     val navController = rememberNavController()
     val mapboxTokenState = mainViewModel.mapboxToken.collectAsState()
@@ -62,7 +65,13 @@ fun MainScreen(
                         )
                     }
                 },
-                actions = TopBarActions.actions
+                actions = listOf(
+                    TopBarAction(
+                    icon = ImageVector.vectorResource(id = R.drawable.rounded_notifications_24),
+                    onClick = {
+                        navController.navigate(NavigationRoutes.Notifications.route)
+                    }
+                ))
             )
         },
         bottomBar = {
@@ -75,13 +84,10 @@ fun MainScreen(
                 .padding(paddingValues), // Apply padding from Scaffold
             contentAlignment = Alignment.Center
         ) {
-            MainNavigationGraph(navController = navController) // Navigation graph for bottom navigation
+            MainNavigationGraph(
+                navController = navController,
+                mainViewModel = mainViewModel
+            ) // Navigation graph for bottom navigation
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewMainScreen() {
-    MainScreen()
 }

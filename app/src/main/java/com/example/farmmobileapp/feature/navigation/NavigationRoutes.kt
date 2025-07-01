@@ -19,4 +19,5 @@ sealed class NavigationRoutes(val route: String) {
     }
     data object ReportCreate : NavigationRoutes("reportCreate")
     data object Profile : NavigationRoutes("profile")
+    data object Notifications : NavigationRoutes("notifications")
 }

@@ -10,6 +10,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.receiveAsFlow
+
+enum class NavigationCommand {
+    NavigateToLogin
+}
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
@@ -21,6 +27,10 @@ class MainViewModel @Inject constructor(
     val mapboxToken: StateFlow<String?> = _mapboxToken
 
     val isAuthenticated: StateFlow<Boolean> = authenticationManager.isAuthenticated
+
+    // --- Navigation Event Channel ---
+    private val _navigationCommand = Channel<NavigationCommand>(Channel.BUFFERED)
+    val navigationCommand = _navigationCommand.receiveAsFlow() // Expose as Flow
 
     init {
         Log.d("MainViewModel", "MainViewModel initialized")
@@ -48,6 +58,13 @@ class MainViewModel @Inject constructor(
                 Log.e("MainViewModel", "Error loading Mapbox token", e)
                 _mapboxToken.value = null // Indicate token loading failure
             }
+        }
+    }
+
+    // --- Function to trigger navigation ---
+    fun requestLogoutNavigation() {
+        viewModelScope.launch {
+            _navigationCommand.send(NavigationCommand.NavigateToLogin)
         }
     }
 }

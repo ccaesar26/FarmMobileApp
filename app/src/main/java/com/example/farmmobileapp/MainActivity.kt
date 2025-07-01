@@ -24,11 +24,3 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
-@Preview(showBackground = true)
-@Composable
-fun AppPreview() {
-    FarmMobileAppTheme {
-        AppNavigationGraph() // Preview the navigation setup
-    }
-}

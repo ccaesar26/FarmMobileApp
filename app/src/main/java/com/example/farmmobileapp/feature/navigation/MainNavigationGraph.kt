@@ -3,6 +3,7 @@ package com.example.farmmobileapp.feature.navigation
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -14,6 +15,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
+import com.example.farmmobileapp.feature.notifications.presentation.NotificationsScreen
 import com.example.farmmobileapp.feature.reports.presentation.CreateReportScreen
 import com.example.farmmobileapp.feature.reports.presentation.ReportDetailScreen
 import com.example.farmmobileapp.feature.reports.presentation.ReportDetailViewModel
@@ -24,9 +26,13 @@ import com.example.farmmobileapp.feature.tasks.presentation.TaskWithField
 import com.example.farmmobileapp.feature.tasks.presentation.TasksScreen
 import com.example.farmmobileapp.feature.tasks.presentation.TasksViewModel
 import com.example.farmmobileapp.feature.users.presentation.ProfileScreen
+import com.example.farmmobileapp.main.MainViewModel
 
 @Composable
-fun MainNavigationGraph(navController: NavHostController) {
+fun MainNavigationGraph(
+    navController: NavHostController,
+    mainViewModel: MainViewModel
+) {
     NavHost(
         navController = navController,
         startDestination = NavigationRoutes.Tasks.route
@@ -49,16 +55,22 @@ fun MainNavigationGraph(navController: NavHostController) {
 
                 LaunchedEffect(taskId) {
                     taskWithField = tasksViewModel.getTaskById(taskId)
+                    tasksViewModel.loadComments(taskId)
                 }
 
                 taskWithField?.let { taskWithField ->
                     TaskDetailScreen(
                         taskWithField = taskWithField,
+                        taskState = tasksViewModel.state,
                         onBack = { navController.popBackStack() },
                         onUpdateStatus = { newStatus ->
                             tasksViewModel.updateTaskStatus(taskWithField.task.id, newStatus)
                             // navigate to the same page with updated task and pop the back stack
-                            navController.navigate(NavigationRoutes.TaskDetail.createRoute(taskWithField.task.id)) {
+                            navController.navigate(
+                                NavigationRoutes.TaskDetail.createRoute(
+                                    taskWithField.task.id
+                                )
+                            ) {
                                 popUpTo(NavigationRoutes.TaskDetail.route) {
                                     inclusive = true
                                 }
@@ -69,7 +81,10 @@ fun MainNavigationGraph(navController: NavHostController) {
                                 taskWithField.task.id,
                                 TaskStatus.Completed
                             )
-                        }
+                        },
+                        onAddComment = { comment ->
+                            tasksViewModel.addComment(taskWithField.task.id, comment)
+                        },
                     )
                 } ?: CircularProgressIndicator()
             }
@@ -97,7 +112,10 @@ fun MainNavigationGraph(navController: NavHostController) {
             }
         }
         composable(NavigationRoutes.Profile.route) {
-            ProfileScreen(navController = navController)
+            ProfileScreen(mainViewModel = mainViewModel)
+        }
+        composable(NavigationRoutes.Notifications.route) {
+            NotificationsScreen(navController = navController)
         }
     }
 }

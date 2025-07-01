@@ -1,8 +1,8 @@
 package com.example.farmmobileapp.core.di
 
+import android.util.Log
 import com.example.farmmobileapp.core.storage.TokenRepository
 import io.ktor.client.*
-import io.ktor.client.engine.cio.* // Or Android engine
 import io.ktor.client.plugins.*
 import io.ktor.client.plugins.auth.*
 import io.ktor.client.plugins.auth.providers.*
@@ -18,12 +18,18 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import io.ktor.client.call.body
+import io.ktor.client.engine.android.Android
 
 // Data class for your refresh token response (adjust structure as needed)
 @kotlinx.serialization.Serializable
 data class RefreshTokenResponse(
     val accessToken: String,
     val refreshToken: String // Optional: Your backend might issue a new refresh token
+)
+
+@kotlinx.serialization.Serializable
+data class RefreshTokenRequestDto(
+    val refreshToken: String
 )
 
 @Module
@@ -44,12 +50,15 @@ object NetworkModule {
         tokenRepository: TokenRepository,
         json: Json
     ): HttpClient {
-        return HttpClient(CIO) { // Or Android engine: HttpClient(Android)
+        return HttpClient(Android) { // Or Android engine: HttpClient(Android)
 
             expectSuccess = true // Optional: Fail if status code is not 2xx
 
             install(ContentNegotiation) {
-                json(json)
+                json(Json {
+                    isLenient = true // Allow lenient parsing
+                    ignoreUnknownKeys = true // Ignore unknown keys in JSON responses
+                })
             }
 
             install(Logging) {
@@ -82,18 +91,22 @@ object NetworkModule {
 
                         // Create a separate Ktor client instance ONLY for the refresh call
                         // to avoid recursion or using the potentially failing Auth setup of the main client.
-                        val refreshTokenClient = HttpClient(CIO) { // Or Android
+                        val refreshTokenClient = HttpClient(Android) { // Or Android
                             install(ContentNegotiation) { json(json) }
+                            defaultRequest {
+                                url("http://10.0.2.2:5800/")
+                                contentType(ContentType.Application.Json)
+                            }
                             // No Auth feature here!
                             expectSuccess = false // Handle errors manually for refresh endpoint
                         }
 
                         try {
-                            val response: RefreshTokenResponse = refreshTokenClient.post("YOUR_BACKEND_BASE_URL/api/auth/refresh") { // Replace with your actual refresh endpoint
+                            val response: RefreshTokenResponse = refreshTokenClient.post("api/auth/refresh-token") { // Replace with your actual refresh endpoint
                                 contentType(ContentType.Application.Json)
                                 // Send the refresh token (adjust based on your backend's expectation)
                                 // Example: Sending as JSON body
-                                setBody(mapOf("refreshToken" to currentRefreshToken))
+                                setBody(RefreshTokenRequestDto(currentRefreshToken))
                                 // Example: Sending as header
                                 // header("Authorization-Refresh", "Bearer $currentRefreshToken")
                             }.body() // Assuming ktor throws on non-2xx if expectSuccess=true
@@ -102,6 +115,7 @@ object NetworkModule {
                             tokenRepository.saveAccessToken(response.accessToken)
                             tokenRepository.saveRefreshToken(response.refreshToken)
                             println("Tokens refreshed successfully.")
+                            Log.d("NetworkModule", "Tokens refreshed successfully.")
 
                             // Return the new tokens to the Auth feature
                             BearerTokens(response.accessToken, response.refreshToken)
@@ -127,7 +141,7 @@ object NetworkModule {
                         // Define which paths DON'T need authentication (e.g., login, register, maybe refresh itself)
                         // return true if the request path should proceed without a token
                         val path = request.url.encodedPath
-                        path.startsWith("/api/auth/login") || path.startsWith("/api/auth/register")
+                        path.startsWith("/api/auth/login") || path.startsWith("/api/auth/register") || path.startsWith("/api/auth/logout")
                         // Important: Do NOT add the refresh path here if refreshTokens block handles it
                     }
                 }

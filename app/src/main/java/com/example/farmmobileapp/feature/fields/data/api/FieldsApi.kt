@@ -5,4 +5,5 @@ import com.example.farmmobileapp.util.Resource
 
 interface FieldsApi {
     suspend fun getField(fieldId: String): Resource<Field>
+    suspend fun getFields(): Resource<List<Field>>
 }

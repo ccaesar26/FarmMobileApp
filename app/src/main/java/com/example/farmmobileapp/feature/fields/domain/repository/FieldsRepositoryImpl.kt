@@ -12,4 +12,8 @@ class FieldsRepositoryImpl @Inject constructor(
     override suspend fun getField(fieldId: String): Resource<Field> {
         return fieldsApi.getField(fieldId) // Use FieldsApi to get Field
     }
+
+    override suspend fun getFields(): Resource<List<Field>> {
+        return fieldsApi.getFields() // Use FieldsApi to get list of Fields
+    }
 }

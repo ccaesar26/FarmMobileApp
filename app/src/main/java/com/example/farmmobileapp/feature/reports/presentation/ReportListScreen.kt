@@ -47,7 +47,7 @@ fun ReportListScreen(
 //        } else
         if (uiState.reportsWithFields.isEmpty() && uiState.error == null) {
             // Explicitly align the empty text in the center of the Box
-            Text("No reportsWithFields found.", modifier = Modifier.align(Alignment.Center))
+            Text("No reports yet.", modifier = Modifier.align(Alignment.Center))
         } else if (uiState.error != null) {
             // Handle error display if needed (e.g., centered text)
             Text(
